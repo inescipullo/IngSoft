@@ -1,0 +1,128 @@
+def_type(t_proc_queue, rel(int, process)).
+
+invariant(invFun).
+dec_p_type(invFun(t_proc_queue)).
+invFun(ProcQueue) :- pfun(ProcQueue).
+
+def_type(t_tick, int).
+
+invariant(invNat).
+dec_p_type(invNat(t_tick)).
+invNat(RemTicks) :- RemTicks >= 0.
+
+parameters([Quantum]).
+axiom(quantum).
+dec_p_type(quantum(t_tick)).
+quantum(Quantum) :- Quantum == 5.
+
+variables([ProcQueue, Current, RemTicks]).
+
+invariant(invDispatcher).
+dec_p_type(invDispatcher(t_proc_queue, process, t_tick)).
+invDispatcher(ProcQueue, Current, RemTicks) :- rres(set(Current), ProcQueue, R) & R = {}.
+
+intial(initDispatcher).
+initDispatcher(ProcQueue, Current, RemTicks) :-
+    arr(ProcQueue, 0) &
+    Current = nullp &
+    RemTicks = 0.
+
+newProcessOk(ProcQueue, Current, RemTicks, NewProc, ProcQueue_, Current_, RemTicks_) :-
+    rres(set(NewProc), ProcQueue, R) & R = {} &
+    Current neq NewProc &
+    add(ProcQueue_, n, NewProc, ProcQueue) &
+    Current_ = Current &
+    RemTicks_ = RemTicks.
+
+newProcessError(ProcQueue, Current, RemTicks, NewProc, ProcQueue_, Current_, RemTicks_) :-
+    Current == NewProc or (rres(set(Current), ProcQueue, R) & R neq {}) &
+    ProcQueue_ = ProcQueue &
+    Current_ = Current &
+    RemTicks_ = RemTicks.
+
+operation(newProcess).
+dec_p_type(newProcess(t_proc_queue, process, t_tick, process, t_proc_queue, process, t_tick)).
+newProcess(ProcQueue, Current, RemTicks, NewProc, ProcQueue_, Current_, RemTicks_) :-
+    newProcessOk(ProcQueue, Current, RemTicks, NewProc, ProcQueue_, Current_, RemTicks_)
+    or
+    newProcessError(ProcQueue, Current, RemTicks, NewProc, ProcQueue_, Current_, RemTicks_).
+
+tick(ProcQueue, Current, RemTicks, ProcQueue_, Current_, RemTicks_) :-
+    RemTicks > 0 &
+    Current neq nullp &
+    ProcQueue_ = ProcQueue &
+    Current_ = Current &
+    RemTicks_ = RemTicks - 1.
+
+timeout(ProcQueue, Current, RemTicks, ProcQueue_, Current_, RemTicks_) :-
+    RemTicks = 0 &
+    Current neq nullp &
+    add(ProcQueue_, n, Current, ProcQueue) &
+    Current_ = nullp &
+    RemTicks_ = RemTicks.
+
+idle(ProcQueue, Current, RemTicks, ProcQueue_, Current_, RemTicks_) :-
+    Current = nullp &
+    ProcQueue = {} &
+    add(ProcQueue_, n, Current, ProcQueue) &
+    Current_ = nullp &
+    RemTicks_ = RemTicks.
+
+%%%%%%%% DEFINITION OF TAIL FUNCTION FOR ARRAYS
+dec_pp_type(tail(rel(int,T), rel(int,T))).
+tail(A, B) :-
+  % Remove the first element from A to create the rest of the list
+  remove_first(A, 1, ARest),
+  % Now, shift the remaining elements by 1
+  shift_indices(ARest, B).
+
+% remove_first/3: Removes the first element (with index 1) from the list
+remove_first([], _, []).
+remove_first([{1, _}|Rest], 1, Rest).
+remove_first([H|Rest], I, [H|RestRest]) :-
+  I1 is I - 1,
+  remove_first(Rest, I1, RestRest).
+
+% shift_indices/2: Shifts the indices of the remaining list by -1
+shift_indices([], []).
+shift_indices([{I, V}|Rest], [{I1, V}|RestShifted]) :-
+  I1 is I - 1,
+  shift_indices(Rest, RestShifted).
+%%%%%%%%
+
+dispatchProc(ProcQueue, Current, RemTicks, ProcQueue_, Current_, RemTicks_) :-
+    Current = nullp &
+    ProcQueue neq {} &
+    tail(ProcQueue, ProcQueue_) &
+    head(ProcQueue, Current_) &
+    RemTicks_ = Quantum.
+
+operation(dispatch).
+dec_p_type(dispatch(t_proc_queue, process, t_tick, t_proc_queue, process, t_tick)).
+dispatch(ProcQueue, Current, RemTicks, ProcQueue_, Current_, RemTicks_) :-
+    tick(ProcQueue, Current, RemTicks, ProcQueue_, Current_, RemTicks_)
+    or
+    timeout(ProcQueue, Current, RemTicks, ProcQueue_, Current_, RemTicks_)
+    or
+    idle(ProcQueue, Current, RemTicks, ProcQueue_, Current_, RemTicks_)
+    or
+    dispatchProc(ProcQueue, Current, RemTicks, ProcQueue_, Current_, RemTicks_).
+
+terminateProcOk(ProcQueue, Current, RemTicks, Proc, ProcQueue_, Current_, RemTicks_) :-
+    Current == Proc &
+    ProcQueue_ = ProcQueue &
+    Current_ = nullp &
+    RemTicks_ = RemTicks.
+
+terminateProcError(ProcQueue, Current, RemTicks, Proc, ProcQueue_, Current_, RemTicks_) :-
+    Current neq Proc &
+    ProcQueue_ = ProcQueue &
+    Current_ = Current &
+    RemTicks_ = RemTicks.
+
+operation(terminateProc).
+dec_p_type(terminateProc(t_proc_queue, process, t_tick, process, t_proc_queue, process, t_tick)).
+terminateProc(ProcQueue, Current, RemTicks, Proc, ProcQueue_, Current_, RemTicks_) :-
+    terminateProcOk(ProcQueue, Current, RemTicks, Proc, ProcQueue_, Current_, RemTicks_)
+    or
+    terminateProcError(ProcQueue, Current, RemTicks, Proc, ProcQueue_, Current_, RemTicks_).
