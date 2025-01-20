@@ -1,0 +1,46 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc} % codificacion de caracteres que permite tildes
+
+\usepackage{subcaption}
+
+\addtolength{\textwidth}{0.2cm}
+\setlength{\parskip}{8pt}
+\setlength{\parindent}{0.5cm}
+\linespread{1.5}
+
+
+\title{Propuesta Trabajo Práctico Verificación de Software - Ingeniería de Software}
+\author{Ines Cipullo}
+\date{}
+
+\begin{document}
+\thispagestyle{empty}
+\maketitle
+\pagenumbering{gobble}
+
+\section*{Requerimientos}
+
+Se describen los requerimientos de un planificador de procesos a corto plazo, encargado de planificar los procesos que están listos para ejecución, también llamado \textit{dispatcher}. Este planificador implementará el algoritmo de planificaión ``Ronda'' (\textit{Round Robin} en inglés), y este sistema tendrá un único procesador.
+
+Un proceso puede estar en alguno de los siguientes estados: nuevo, listo, ejecutando, bloqueado, terminado. El dispatcher decide entre los procesos que están listos para ejecutarse y determina a cuál de ellos \textit{activar}, y detiene a aquellos que \textit{exceden su tiempo} de procesador, es decir, se encarga de las transiciones entre los estados \textbf{listo} y \textbf{ejecutando}. 
+
+Siguiendo Round Robin, los procesos listos se almacenan en forma de cola, cada proceso listo se ejecuta por un sólo \textit{quantum} y si un proceso no ha terminado de ejecutarse al final de su período, será interrumpido y puesto al final de la cola de procesos listos.
+Se deben tener en cuenta, también, aquellas transiciones que involucran otros estados de procesos pero inciden sobre alguno de los dos estados que se controlan desde el dispatcher. Los procesos que sean agregados a la cola de listos por estas otras transiciones, se ubicarán al final de la misma.
+
+
+
+% servidor con Protocolo de Transferencia de Archivos (FTP, del inglés \textit{File Transfer Protocol}).
+
+% Un servidor FTP ofrece un servicio utilizado para el envío y obtención de archivos entre dos equipos remotos, almacenando los archivos e información sobre los usuarios. La interfaz debe permitir las siguientes operaciones:
+% \begin{itemize}
+% 	\item \textbf{connect}: abrir la conexión de un usuario (con autenticación), operación necesaria para que el usuario pueda utilizar las restantes operaciones.
+%  	\item \textbf{put}: agregar un archivo al sistema de archivos local del usuario (en el servidor).
+%   	\item \textbf{get}: enviar el contenido del archivo solicitado al usuario.
+%    	\item \textbf{close}: cerrar la conexión abierta de un usuario.
+% \end{itemize}
+
+% El sistema ofrece una función que asocia los datos de autenticación de los usuarios existentes.
+
+
+
+\end{document}
