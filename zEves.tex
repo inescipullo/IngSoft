@@ -1,0 +1,121 @@
+\begin{zed}
+    [PROCESS]
+\also
+    TICK == \num
+\end{zed}
+
+\begin{axdef}
+    nullp : PROCESS
+\end{axdef}
+
+\begin{axdef}
+    quantum : TICK
+\where
+    quantum = 5
+\end{axdef}
+
+\begin{schema}{Dispatcher}
+    procQueue : \seq PROCESS \\
+    current : PROCESS \\
+    remTicks : TICK
+\end{schema}
+
+\begin{schema}{InitDispatcher}
+    Dispatcher
+\where
+    procQueue = \langle \rangle \\
+    current = nullp \\
+    remTicks = 0
+\end{schema}
+
+\begin{schema}{InvDispatcher}
+    Dispatcher
+\where
+	\lnot (\langle nullp \rangle \inseq procQueue) \\
+	\lnot (\langle current \rangle \inseq procQueue)
+\end{schema}
+
+\begin{schema}{NewProcessOk}
+    \Delta Dispatcher \\
+    p? : PROCESS
+\where
+    p? \notin \ran procQueue \\
+    p? \neq current \\
+    p? \neq nullp \\
+    procQueue' = procQueue \cat \langle p? \rangle \\
+    current' = current \\
+    remTicks' = remTicks
+\end{schema}
+
+\begin{schema}{NewProcessError}
+    \Xi Dispatcher \\
+    p? : PROCESS
+\where
+    p? \in \ran procQueue \lor p? = current \lor p? = nullp \\
+\end{schema}
+
+\begin{zed}
+    NewProcess \defs NewProcessOk \lor NewProcessError
+\end{zed}
+
+\begin{schema}{Tick}
+    \Delta Dispatcher
+\where
+    remTicks > 0 \\
+    current \neq nullp \\
+    procQueue' = procQueue \\
+    current' = current \\
+    remTicks' = remTicks - 1    
+\end{schema}
+
+\begin{schema}{Timeout}
+    \Delta Dispatcher
+\where
+    remTicks = 0 \\
+    current \neq nullp \\
+    procQueue' = procQueue \cat \langle current \rangle \\
+    current' = nullp \\
+    remTicks' = remTicks 
+\end{schema}
+
+\begin{schema}{DispatchProcess}
+    \Delta Dispatcher
+\where
+    current = nullp \\
+    procQueue \neq \langle \rangle \\
+    procQueue' = procQueue \cat \langle current \rangle \\
+    current' = nullp \\
+    remTicks' = remTicks 
+\end{schema}
+
+\begin{schema}{Idle}
+    \Xi Dispatcher
+\where
+    current = nullp \\
+    procQueue = \langle \rangle
+\end{schema}
+
+\begin{zed}
+    Dispatch \defs Tick \lor Timeout \lor DispatchProcess \lor Idle
+\end{zed}
+
+\begin{schema}{TerminateProcessOk}
+    \Delta Dispatcher \\
+    p? : PROCESS
+\where
+    current = p? \\
+    procQueue' = procQueue \\
+    current' = nullp \\
+    remTicks' = remTicks
+\end{schema}
+
+\begin{schema}{TerminateProcessError}
+    \Xi Dispatcher \\
+    p? : PROCESS
+\where
+    current \neq p?
+\end{schema}
+
+\begin{zed}
+    TerminateProcess \defs TerminateProcessOk \lor TerminateProcessError
+\end{zed}

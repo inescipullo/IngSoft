@@ -1,41 +1,62 @@
+% TIPOS
 def_type(t_proc_queue, rel(int, process)).
 
-invariant(invFun).
-dec_p_type(invFun(t_proc_queue)).
-invFun(ProcQueue) :- pfun(ProcQueue).
-
 def_type(t_tick, int).
+
+parameters([Quantum]).
+
+% ESTADO
+variables([ProcQueue, Current, RemTicks]).
+
+% DEFINICION AXIOMATICA
+axiom(quantum).
+dec_p_type(quantum(t_tick)).
+quantum(Quantum) :- Quantum = 5.
+
+% INVARIANTES
+invariant(invSeq).
+dec_p_type(invSeq(t_proc_queue)).
+invSeq(ProcQueue) :- pfun(ProcQueue) & let([N], size(ProcQueue, N), (N = 0 or dom(ProcQueue, int(1,N)))).
+
+dec_p_type(n_invSeq(t_proc_queue)).
+n_invSeq(ProcQueue) :- npfun(ProcQueue) & neg(let([N], size(ProcQueue, N), (N = 0 or dom(ProcQueue, int(1,N))))).
 
 invariant(invNat).
 dec_p_type(invNat(t_tick)).
 invNat(RemTicks) :- RemTicks >= 0.
 
-parameters([Quantum]).
-axiom(quantum).
-dec_p_type(quantum(t_tick)).
-quantum(Quantum) :- Quantum == 5.
-
-variables([ProcQueue, Current, RemTicks]).
+dec_p_type(n_invNat(t_tick)).
+n_invNat(RemTicks) :- neg(RemTicks >= 0).
 
 invariant(invDispatcher).
 dec_p_type(invDispatcher(t_proc_queue, process, t_tick)).
-invDispatcher(ProcQueue, Current, RemTicks) :- rres(set(Current), ProcQueue, R) & R = {}.
+invDispatcher(ProcQueue, Current) :- let([Ran], ran(ProcQueue, Ran), Current nin Ran & nullp nin Ran).
 
-intial(initDispatcher).
+dec_p_type(n_invDispatcher(t_proc_queue, process, t_tick)).
+n_invDispatcher(ProcQueue, Current) :- neg(let([Ran], ran(ProcQueue, Ran), Current nin Ran & nullp nin Ran)).
+
+% ESTADO INICIAL
+initial(initDispatcher).
+dec_p_type(initDispatcher(t_proc_queue, process, t_tick)).
 initDispatcher(ProcQueue, Current, RemTicks) :-
-    arr(ProcQueue, 0) &
+    ProcQueue = {} &
     Current = nullp &
     RemTicks = 0.
 
+% OPERACIONES
+
+%%% newProcess %%%
 newProcessOk(ProcQueue, Current, RemTicks, NewProc, ProcQueue_, Current_, RemTicks_) :-
-    rres(set(NewProc), ProcQueue, R) & R = {} &
-    Current neq NewProc &
-    add(ProcQueue_, n, NewProc, ProcQueue) &
+    ran(ProcQueue, Ran) & NewProc nin Ran &
+    NewProc neq Current &
+    NewProc neq nullp &
+    size(ProcQueue, N) & N1 is N+1 & dec(N1, int) &
+    ProcQueue_ = {[N1, NewProc] / ProcQueue} &
     Current_ = Current &
     RemTicks_ = RemTicks.
 
 newProcessError(ProcQueue, Current, RemTicks, NewProc, ProcQueue_, Current_, RemTicks_) :-
-    Current == NewProc or (rres(set(Current), ProcQueue, R) & R neq {}) &
+    ((ran(ProcQueue, Ran) & NewProc in Ran) or NewProc = Current or NewProc = nullp) &
     ProcQueue_ = ProcQueue &
     Current_ = Current &
     RemTicks_ = RemTicks.
@@ -47,55 +68,46 @@ newProcess(ProcQueue, Current, RemTicks, NewProc, ProcQueue_, Current_, RemTicks
     or
     newProcessError(ProcQueue, Current, RemTicks, NewProc, ProcQueue_, Current_, RemTicks_).
 
+%%% dispatch %%%
 tick(ProcQueue, Current, RemTicks, ProcQueue_, Current_, RemTicks_) :-
     RemTicks > 0 &
     Current neq nullp &
     ProcQueue_ = ProcQueue &
     Current_ = Current &
-    RemTicks_ = RemTicks - 1.
+    RemTicks_ is RemTicks - 1 & dec(RemTicks_, int).
 
 timeout(ProcQueue, Current, RemTicks, ProcQueue_, Current_, RemTicks_) :-
     RemTicks = 0 &
     Current neq nullp &
-    add(ProcQueue_, n, Current, ProcQueue) &
+    size(ProcQueue, N) & N1 is N+1 & dec(N1, int) &
+    ProcQueue_ = {[N1, Current] / ProcQueue} &
     Current_ = nullp &
-    RemTicks_ = RemTicks.
+    RemTicks_ = 0.
 
 idle(ProcQueue, Current, RemTicks, ProcQueue_, Current_, RemTicks_) :-
     Current = nullp &
     ProcQueue = {} &
-    add(ProcQueue_, n, Current, ProcQueue) &
-    Current_ = nullp &
+    ProcQueue_ = ProcQueue &
+    Current_ = Current &
     RemTicks_ = RemTicks.
 
-%%%%%%%% DEFINITION OF TAIL FUNCTION FOR ARRAYS
-dec_pp_type(tail(rel(int,T), rel(int,T))).
-tail(A, B) :-
-  % Remove the first element from A to create the rest of the list
-  remove_first(A, 1, ARest),
-  % Now, shift the remaining elements by 1
-  shift_indices(ARest, B).
-
-% remove_first/3: Removes the first element (with index 1) from the list
-remove_first([], _, []).
-remove_first([{1, _}|Rest], 1, Rest).
-remove_first([H|Rest], I, [H|RestRest]) :-
-  I1 is I - 1,
-  remove_first(Rest, I1, RestRest).
-
-% shift_indices/2: Shifts the indices of the remaining list by -1
-shift_indices([], []).
-shift_indices([{I, V}|Rest], [{I1, V}|RestShifted]) :-
-  I1 is I - 1,
-  shift_indices(Rest, RestShifted).
-%%%%%%%%
+% Funcion auxiliar
+% shift_indexes/2: Shifts indexes by -1
+shift_indexes({}, {}).
+shift_indexes(Tail, Result) :-
+    Tail = {[I,V] / Rest} &
+    I1 is I - 1 & dec(I1, int) &
+    shift_indexes(Rest, RestShifted) &
+    Result = {[I1,V] / RestShifted}.
 
 dispatchProc(ProcQueue, Current, RemTicks, ProcQueue_, Current_, RemTicks_) :-
     Current = nullp &
     ProcQueue neq {} &
-    tail(ProcQueue, ProcQueue_) &
-    head(ProcQueue, Current_) &
-    RemTicks_ = Quantum.
+    RemTicks = 0 &
+    ProcQueue = {[1,Head] / Tail} & [1,Head] nin Tail &
+    shift_indexes(Tail, ProcQueue_) &
+    Current_ = Head &
+    quantum(RemTicks_).
 
 operation(dispatch).
 dec_p_type(dispatch(t_proc_queue, process, t_tick, t_proc_queue, process, t_tick)).
@@ -108,14 +120,17 @@ dispatch(ProcQueue, Current, RemTicks, ProcQueue_, Current_, RemTicks_) :-
     or
     dispatchProc(ProcQueue, Current, RemTicks, ProcQueue_, Current_, RemTicks_).
 
+%%% terminateProc %%%
 terminateProcOk(ProcQueue, Current, RemTicks, Proc, ProcQueue_, Current_, RemTicks_) :-
-    Current == Proc &
+    Current = Proc &
+    RemTicks neq 0 &
     ProcQueue_ = ProcQueue &
     Current_ = nullp &
-    RemTicks_ = RemTicks.
+    RemTicks_ = 0.
 
 terminateProcError(ProcQueue, Current, RemTicks, Proc, ProcQueue_, Current_, RemTicks_) :-
-    Current neq Proc &
+    Current neq Proc & 
+    RemTicks >= 0 &
     ProcQueue_ = ProcQueue &
     Current_ = Current &
     RemTicks_ = RemTicks.
