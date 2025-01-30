@@ -119,3 +119,25 @@
 \begin{zed}
     TerminateProcess \defs TerminateProcessOk \lor TerminateProcessError
 \end{zed}
+
+
+\begin{theorem}{TerminateProcessInvDispatcher}
+    InvDispatcher \land TerminateProcess \implies InvDispatcher'
+\end{theorem}
+
+\begin{zproof}[TerminateProcessInvDispatcher]
+    invoke TerminateProcess;
+    split TerminateProcessOk;
+    simplify;
+    cases;
+    invoke TerminateProcessOk;
+    invoke InvDispatcher;
+    equality substitute procQueue';
+    simplify;
+    next;
+    invoke TerminateProcessError;
+    invoke InvDispatcher;
+    invoke \Xi Dispatcher;
+    rewrite;
+    next;
+\end{zproof}
