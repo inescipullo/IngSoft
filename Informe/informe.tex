@@ -1,36 +1,24 @@
 \documentclass{article}
 \usepackage[utf8]{inputenc} %codificacion de caracteres que permite tildes
-% \usepackage[spanish]{babel}
-
 \usepackage{amsfonts}
 \usepackage{natbib}
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{amsthm}
 \usepackage{mathrsfs} % Cursive font
-% \usepackage{ragged2e}
 \usepackage{fancyhdr}
-% \usepackage{nameref}
-% \usepackage{wrapfig}
-\usepackage{hyperref}
 \usepackage{framed}
-\usepackage{xspace}
+% \usepackage{xspace}
 \usepackage{dirtree}
-\usepackage{multicol}
+% \usepackage{multicol}
 \usepackage{z-eves}
+
+\usepackage[T1]{fontenc} % fastest font
 
 
 \usepackage{float}
 \usepackage{graphicx}
 \usepackage{subcaption}
-% \graphicspath{ {./Resources/} }
-
-% \usepackage[
-% top    = 2cm,
-% bottom = 1.5cm,
-% left   = 1.5cm,
-% right  = 1.5cm]
-% {geometry}
 
 \newcommand{\desig}[2]{\item #1 $\approx #2$}
 \newenvironment{designations}
@@ -122,7 +110,7 @@ Luego, se introducen los tipos que se utilizan en la especificaci\'on.
 \begin{zed}
     [PROCESS]
 \also
-    TICK ::= \nat
+    TICK == \nat
 \end{zed}
 
 Adem\'as, se presentan las siguientes definiciones axiom\'aticas, donde se define la existencia del proceso $nullp$, que representa el proceso nulo, y la constante $quantum$, que equivale a 5 ticks.
@@ -153,12 +141,13 @@ Se define entonces el espacio de estados del planificador y su estado inicial.
     remTicks = 0
 \end{schema}
 
-Como un proceso no puede estar \textit{en ejecución} y \textit{listo} al mismo tiempo, se plantea el invarinate de que $current$ no puede pertenecer a $procQueue$.
+Como un proceso no puede estar \textit{en ejecución} y \textit{listo} al mismo tiempo, se plantea el siguiente invarinate de estado:
 
 \begin{schema}{InvDispatcher}
     Dispatcher
 \where
-    procQueue \rres \{current\} = \emptyset
+    \lnot \langle nullp \rangle \inseq procQueue \\
+    \lnot \langle current \rangle \inseq procQueue
 \end{schema}
 
 Procedemos con la especificación de las operaciones requeridas. Estas son:
@@ -169,21 +158,22 @@ Procedemos con la especificación de las operaciones requeridas. Estas son:
 \end{itemize}
 
 \begin{schema}{NewProcessOk}
-    \delta Dispatcher \\
+    \Delta Dispatcher \\
     p? : PROCESS
 \where
-    procQueue \rres \{p?\} = \emptyset \\
-    current \neq p? \\
+    p? \notin \ran procQueue \\
+    p? \neq current \\
+    p? \neq nullp \\
     procQueue' = procQueue \cat \langle p? \rangle \\
     current' = current \\
     remTicks' = remTicks
 \end{schema}
 
 \begin{schema}{NewProcessError}
-    \Xi Dispatcher
+    \Xi Dispatcher \\
     p? : PROCESS
 \where
-    procQueue \rres \{p?\} \neq \emptyset \lor current = p?
+    p? \in \ran procQueue \lor p? = current \lor p? = nullp
 \end{schema}
 
 \begin{zed}
@@ -215,8 +205,8 @@ Procedemos con la especificación de las operaciones requeridas. Estas son:
 \where
     current = nullp \\
     procQueue \neq \langle \rangle \\
-    procQueue' = procQueue \cat \langle current \rangle \\
-    current' = nullp \\
+    procQueue' = tail~procQueue \\
+    current' = head~procQueue \\
     remTicks' = remTicks 
 \end{schema}
 
@@ -253,4 +243,143 @@ Procedemos con la especificación de las operaciones requeridas. Estas son:
 \end{zed}
 
 
+\section{Simulaciones en \textit{\{log\}}}
+
+Se traduce la especificación a \textit{\{log\}} (en \textbf{planificador.slog}). A continuación, se presentan dos simulaciones ejecutadas sobre \textit{\{log\}} y la primera solución de cada una.
+
+
+\subsection*{1ra simulación}
+
+\begin{verbatim}
+    initDispatcher(PQ0, C0, RT0)               & 
+    newProcess(PQ0, C0, RT0, p1, PQ1, C1, RT1) & 
+    dispatch(PQ1, C1, RT1, PQ2, C2, RT2)       &
+    dispatch(PQ2, C2, RT2, PQ3, C3, RT3)       &
+    dispatch(PQ3, C3, RT3, PQ4, C4, RT4)       &
+    dispatch(PQ4, C4, RT4, PQ5, C5, RT5)       &
+    dispatch(PQ5, C5, RT5, PQ6, C6, RT6)       &
+    dispatch(PQ6, C6, RT6, PQ7, C7, RT7)       &
+    dispatch(PQ7, C7, RT7, PQ8, C8, RT8). 
+\end{verbatim}
+
+La idea de esta simulación es encolar un nuevo proceso \textbf{p1} en la cola de procesos listos, luego iniciar su ejecución hasta que termine el tiempo de ejecución asignado (1 \textbf{quantum}) y sea interrumpido por el dispatcher. El resultado es el esperado:
+
+\begin{verbatim}
+    PQ0 = {},  
+    C0 = nullp,  
+    RT0 = 0,  
+    PQ1 = {[1,p1]},  
+    C1 = nullp,  
+    RT1 = 0,  
+    PQ2 = {},  
+    C2 = p1,  
+    RT2 = 5,  
+    PQ3 = {},  
+    C3 = p1,  
+    RT3 = 4,  
+    PQ4 = {},  
+    C4 = p1,  
+    RT4 = 3,  
+    PQ5 = {},  
+    C5 = p1,  
+    RT5 = 2,  
+    PQ6 = {},  
+    C6 = p1,  
+    RT6 = 1,  
+    PQ7 = {},  
+    C7 = p1,  
+    RT7 = 0,  
+    PQ8 = {[1,p1]},  
+    C8 = nullp,  
+    RT8 = 0
+\end{verbatim}
+
+
+\subsection*{2da simulación}
+
+\begin{verbatim}
+    initDispatcher(PQ0, C0, RT0)                  & 
+    newProcess(PQ0, C0, RT0, p1, PQ1, C1, RT1)    & 
+    newProcess(PQ1, C1, RT1, p2, PQ2, C2, RT2)    & 
+    dispatch(PQ2, C2, RT2, PQ3, C3, RT3)          &  
+    dispatch(PQ3, C3, RT3, PQ4, C4, RT4)          & 
+    terminateProc(PQ4, C4, RT4, p1, PQ5, C5, RT5) & 
+    dispatch(PQ5, C5, RT5, PQ6, C6, RT6). 
+\end{verbatim}
+
+La idea de esta simulación es encolar dos nuevos procesos, \textbf{p1} y \textbf{p2}, en la cola de procesos listos, luego iniciar la ejecución del primero, que ejecute por un tick y que termine su ejecución. Despues se inicia la ejecución del segundo. El resultado es el esperado:
+
+\begin{verbatim}
+    PQ0 = {},  
+    C0 = nullp,  
+    RT0 = 0,  
+    PQ1 = {[1,p1]},  
+    C1 = nullp,  
+    RT1 = 0,  
+    PQ2 = {[2,p2],[1,p1]},  
+    C2 = nullp,  
+    RT2 = 0,  
+    PQ3 = {[1,p2]},  
+    C3 = p1,  
+    RT3 = 5,  
+    PQ4 = {[1,p2]},  
+    C4 = p1,  
+    RT4 = 4,  
+    PQ5 = {[1,p2]},  
+    C5 = nullp,  
+    RT5 = 0,  
+    PQ6 = {},  
+    C6 = p2,  
+    RT6 = 5
+\end{verbatim}
+
+
+\section{Generado de Condiciones de Verificación (WIP)}
+
+Se utiliza el VCG para generar condiciones de verificación sobre la especificación en \textit{\{log\}}, lo cual genera el archivo \textbf{planificador-vc.slog}. Luego el comando \verb|check_vcs_planificador| realiza todas las descargas de prueba automaticamente.
+
+\subsection*{Sobre la interacción con el VCG}
+
+Fue necesario agregar la hipótesis \verb|invSeq(ProcQueue)| en la condición de verificación \verb|dispatch_pi_invDispatcher|. Sin esa hipótesis se presentaba un contraejemplo donde \verb|ProcQueue = {[1,C_],[_N2,C_]}|, lo cual no es válido.
+
+
+% NUEVO:
+% agregar hipótesis \verb|invSeq(ProcQueue)| en newProcess_pi_invPFun
+% agregar hipótesis \verb|invSeq(ProcQueue)| en dispatch_pi_invPFun
+% agregar hipótesis \verb|invDispatcher(ProcQueue, Current)| en dispatch_pi_invIny
+% agregar hipótesis \verb|invIny(ProcQueue)| en dispatch_pi_invDispatcher
+
+
+
+También tuve que aumentar el timeout, ya que algunas pruebas resultaron en timeout al principio. Esto fue modificando el parámetro de \verb|def_to|.
+
+\section{Demostración en \textit{Z/EVES}}
+
+Utilizando el asistente de pruebas \textit{Z/EVES}, vamos a demostrar que la operación \verb|TerminateProcess| preserva el invariante de estado \verb|InvDispatcher|.
+
+\begin{theorem}{TerminateProcessInvDispatcher}
+    InvDispatcher \land TerminateProcess \implies InvDispatcher'
+\end{theorem}
+
+\begin{zproof}[TerminateProcessInvDispatcher]
+    invoke TerminateProcess;
+    split TerminateProcessOk;
+    simplify;
+    cases;
+    invoke TerminateProcessOk;
+    invoke InvDispatcher;
+    equality substitute procQueue';
+    simplify;
+    next;
+    invoke TerminateProcessError;
+    invoke InvDispatcher;
+    invoke \Xi Dispatcher;
+    rewrite;
+    next;
+\end{zproof}
+
+\section{Casos de Prueba con \textsc{Fastest}}
+
+
 \end{document}
+
