@@ -14,12 +14,38 @@ dec_p_type(quantum(t_tick)).
 quantum(Quantum) :- Quantum = 5.
 
 % INVARIANTES
+% invariant(invSeq).
+% dec_p_type(invSeq(t_proc_queue)).
+% invSeq(ProcQueue) :- pfun(ProcQueue) & 
+%                      let([Inv], inv(ProcQueue, Inv), pfun(Inv)) &
+%                      let([N], size(ProcQueue, N), (N = 0 or dom(ProcQueue, int(1,N)))).
+
+% dec_p_type(n_invSeq(t_proc_queue)).
+% n_invSeq(ProcQueue) :- npfun(ProcQueue) & 
+%                        neg(let([Inv], inv(ProcQueue, Inv), pfun(Inv))) &
+%                        neg(let([N], size(ProcQueue, N), (N = 0 or dom(ProcQueue, int(1,N))))).
+
+invariant(invPFun).
+dec_p_type(invPFun(t_proc_queue)).
+invPFun(ProcQueue) :- pfun(ProcQueue).
+
+dec_p_type(n_invPFun(t_proc_queue)).
+n_invPFun(ProcQueue) :- npfun(ProcQueue).
+
+invariant(invIny).
+dec_p_type(invIny(t_proc_queue)).
+invIny(ProcQueue) :- let([Inv], inv(ProcQueue, Inv), pfun(Inv)).
+
+dec_p_type(n_invIny(t_proc_queue)).
+n_invIny(ProcQueue) :- neg(let([Inv], inv(ProcQueue, Inv), pfun(Inv))).
+
 invariant(invSeq).
 dec_p_type(invSeq(t_proc_queue)).
-invSeq(ProcQueue) :- pfun(ProcQueue) & let([N], size(ProcQueue, N), (N = 0 or dom(ProcQueue, int(1,N)))).
+invSeq(ProcQueue) :- let([N], size(ProcQueue, N), (N = 0 or dom(ProcQueue, int(1,N)))).
 
 dec_p_type(n_invSeq(t_proc_queue)).
-n_invSeq(ProcQueue) :- npfun(ProcQueue) & neg(let([N], size(ProcQueue, N), (N = 0 or dom(ProcQueue, int(1,N))))).
+n_invSeq(ProcQueue) :- neg(let([N], size(ProcQueue, N), (N = 0 or dom(ProcQueue, int(1,N))))).
+
 
 invariant(invNat).
 dec_p_type(invNat(t_tick)).
@@ -29,10 +55,10 @@ dec_p_type(n_invNat(t_tick)).
 n_invNat(RemTicks) :- neg(RemTicks >= 0).
 
 invariant(invDispatcher).
-dec_p_type(invDispatcher(t_proc_queue, process, t_tick)).
+dec_p_type(invDispatcher(t_proc_queue, process)).
 invDispatcher(ProcQueue, Current) :- let([Ran], ran(ProcQueue, Ran), Current nin Ran & nullp nin Ran).
 
-dec_p_type(n_invDispatcher(t_proc_queue, process, t_tick)).
+dec_p_type(n_invDispatcher(t_proc_queue, process)).
 n_invDispatcher(ProcQueue, Current) :- neg(let([Ran], ran(ProcQueue, Ran), Current nin Ran & nullp nin Ran)).
 
 % ESTADO INICIAL
@@ -93,12 +119,13 @@ idle(ProcQueue, Current, RemTicks, ProcQueue_, Current_, RemTicks_) :-
 
 % Funcion auxiliar
 % shift_indexes/2: Shifts indexes by -1
-shift_indexes({}, {}).
-shift_indexes(Tail, Result) :-
-    Tail = {[I,V] / Rest} &
-    I1 is I - 1 & dec(I1, int) &
-    shift_indexes(Rest, RestShifted) &
-    Result = {[I1,V] / RestShifted}.
+shift_indexes({}, N, {}).
+shift_indexes(Tail, Next, Result) :-
+    Tail = {[Next,V] / Rest} &
+    Next1 is Next - 1 & dec(Next1, int) &
+    Next2 is Next + 1 & dec(Next2, int) &
+    shift_indexes(Rest, Next2, RestShifted) &
+    Result = {[Next1,V] / RestShifted}.
 
 dispatchProc(ProcQueue, Current, RemTicks, ProcQueue_, Current_, RemTicks_) :-
     Current = nullp &
