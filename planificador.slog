@@ -14,17 +14,6 @@ dec_p_type(quantum(t_tick)).
 quantum(Quantum) :- Quantum = 5.
 
 % INVARIANTES
-% invariant(invSeq).
-% dec_p_type(invSeq(t_proc_queue)).
-% invSeq(ProcQueue) :- pfun(ProcQueue) & 
-%                      let([Inv], inv(ProcQueue, Inv), pfun(Inv)) &
-%                      let([N], size(ProcQueue, N), (N = 0 or dom(ProcQueue, int(1,N)))).
-
-% dec_p_type(n_invSeq(t_proc_queue)).
-% n_invSeq(ProcQueue) :- npfun(ProcQueue) & 
-%                        neg(let([Inv], inv(ProcQueue, Inv), pfun(Inv))) &
-%                        neg(let([N], size(ProcQueue, N), (N = 0 or dom(ProcQueue, int(1,N))))).
-
 invariant(invPFun).
 dec_p_type(invPFun(t_proc_queue)).
 invPFun(ProcQueue) :- pfun(ProcQueue).
@@ -45,7 +34,6 @@ invSeq(ProcQueue) :- let([N], size(ProcQueue, N), (N = 0 or dom(ProcQueue, int(1
 
 dec_p_type(n_invSeq(t_proc_queue)).
 n_invSeq(ProcQueue) :- neg(let([N], size(ProcQueue, N), (N = 0 or dom(ProcQueue, int(1,N))))).
-
 
 invariant(invNat).
 dec_p_type(invNat(t_tick)).
@@ -118,8 +106,8 @@ idle(ProcQueue, Current, RemTicks, ProcQueue_, Current_, RemTicks_) :-
     RemTicks_ = RemTicks.
 
 % Funcion auxiliar
-% shift_indexes/2: Shifts indexes by -1
-shift_indexes({}, N, {}).
+% shift_indexes/3: Shifts indexes by -1
+shift_indexes({}, N, {}) :- dec(N, int).
 shift_indexes(Tail, Next, Result) :-
     Tail = {[Next,V] / Rest} &
     Next1 is Next - 1 & dec(Next1, int) &
@@ -132,7 +120,7 @@ dispatchProc(ProcQueue, Current, RemTicks, ProcQueue_, Current_, RemTicks_) :-
     ProcQueue neq {} &
     RemTicks = 0 &
     ProcQueue = {[1,Head] / Tail} & [1,Head] nin Tail &
-    shift_indexes(Tail, ProcQueue_) &
+    shift_indexes(Tail, ProcQueue_, 2) &
     Current_ = Head &
     quantum(RemTicks_).
 

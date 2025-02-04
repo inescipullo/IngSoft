@@ -8,9 +8,9 @@
 \usepackage{mathrsfs} % Cursive font
 \usepackage{fancyhdr}
 \usepackage{framed}
-% \usepackage{xspace}
+\usepackage{xspace}
 \usepackage{dirtree}
-% \usepackage{multicol}
+\usepackage{multicol}
 \usepackage{z-eves}
 
 \usepackage[T1]{fontenc} % fastest font
@@ -63,7 +63,7 @@
 \begin{document}
 
 \begin{titlepage}
-    \hspace{-2.5cm}\includegraphics[scale= 0.48]{header.png}
+    \hspace{-3.2cm}\includegraphics[scale= 0.48]{header.png}
     \begin{center}
         \vfill
             \noindent\textbf{\Huge Ingeniería de Software}\par
@@ -334,24 +334,22 @@ La idea de esta simulación es encolar dos nuevos procesos, \textbf{p1} y \textb
 \end{verbatim}
 
 
-\section{Generado de Condiciones de Verificación (WIP)}
+\section{Generado de Condiciones de Verificación}
 
 Se utiliza el VCG para generar condiciones de verificación sobre la especificación en \textit{\{log\}}, lo cual genera el archivo \textbf{planificador-vc.slog}. Luego el comando \verb|check_vcs_planificador| realiza todas las descargas de prueba automaticamente.
 
 \subsection*{Sobre la interacción con el VCG}
 
-Fue necesario agregar la hipótesis \verb|invSeq(ProcQueue)| en la condición de verificación \verb|dispatch_pi_invDispatcher|. Sin esa hipótesis se presentaba un contraejemplo donde \verb|ProcQueue = {[1,C_],[_N2,C_]}|, lo cual no es válido.
+En una primera iteración del comando \verb|check_vcs_planificador|, hubo algunas condiciones de verificación que no fueron descargadas exitosamente. Por lo que fue necesario agregar las siguientes hipótesis en las condición de verificación que lo requerían:
 
+\begin{itemize}
+    \item hipótesis \verb|invSeq(ProcQueue)| en \verb|newProcess_pi_invPFun|
+    \item hipótesis \verb|invSeq(ProcQueue)| en \verb|dispatch_pi_invPFun|
+    \item hipótesis \verb|invDispatcher(ProcQueue, Current)| en \verb|dispatch_pi_invIny|
+    \item hipótesis \verb|invIny(ProcQueue)| en \verb|dispatch_pi_invDispatcher|
+\end{itemize}
 
-% NUEVO:
-% agregar hipótesis \verb|invSeq(ProcQueue)| en newProcess_pi_invPFun
-% agregar hipótesis \verb|invSeq(ProcQueue)| en dispatch_pi_invPFun
-% agregar hipótesis \verb|invDispatcher(ProcQueue, Current)| en dispatch_pi_invIny
-% agregar hipótesis \verb|invIny(ProcQueue)| en dispatch_pi_invDispatcher
-
-
-
-También tuve que aumentar el timeout, ya que algunas pruebas resultaron en timeout al principio. Esto fue modificando el parámetro de \verb|def_to|.
+En todos los casos plantee las negaciones de los enunciados y analicé los contraejemplos que presentaban para saber que hipótesis era necesario agregar. No fue necesario utilizar el comando \verb|findh|.
 
 \section{Demostración en \textit{Z/EVES}}
 
@@ -378,8 +376,151 @@ Utilizando el asistente de pruebas \textit{Z/EVES}, vamos a demostrar que la ope
     next;
 \end{zproof}
 
-\section{Casos de Prueba con \textsc{Fastest}}
+\section{Casos de Prueba con \textsc{Fastest} (WIP)}
 
+Se generan casos de prubea utilizando la herramienta \textsc{Fastest} para la operación \verb|NewProcess|.
+
+\subsection*{Comandos utilizados}
+
+\begin{verbatim}
+    loadspec ../fastest.tex
+    selop NewProcess
+    genalltt
+    addtactic NewProcess_DNF_1 SP \notin p? \notin \ran procQueue
+    addtactic NewProcess_DNF_2 SP \in p? \in \ran procQueue
+    genalltt
+    genalltca
+\end{verbatim}
+
+Con estos comandos se carga la especificación, se selecciona la operación para la cual generar los casos de prueba y se aplican las tacticas de testing.
+En primer lugar, se aplica \textit{Disjunctive Normal Form (DNF)}, que lleva la operación a su forma normal disyuntiva, ya que es la táctica por defecto que aplica \textsc{Fastest} al ejecutar el comando \verb|genalltt|. 
+Esto particiona la operación de acuerdo a las precondiciones de las suboperaciones que la definen, donde \textit{NewProcess\_DNF\_1} corresponde a \textit{newProcessOk}, y las tres restantes corresponden a las tres alternativas de \textit{newProcessError}.
+Luego, se aplican las tacticas de partición estándar (\textit{Standard Partition (SP)}) de $\not\in$ y $\in$, donde resulta útil. Se obtiene el siguiente árbol:
+
+\begin{minipage}{5cm}
+\dirtree{%
+    .1 $NewProcess\_VIS$.
+    .2 $NewProcess\_DNF\_1$.
+    .3 $NewProcess\_SP\_3$.
+    .3 $NewProcess\_SP\_4$.
+    .2 $NewProcess\_DNF\_2$.
+    .3 $NewProcess\_SP\_1$.
+    .3 $NewProcess\_SP\_2$.
+    .2 $NewProcess\_DNF\_3$.
+    .2 $NewProcess\_DNF\_4$.
+}
+\end{minipage}
+
+Finalmente se generan los casos de prueba, obteniendo el siguiente árbol de clases de prueba:
+
+\begin{minipage}{7cm}
+\dirtree{%
+    .1 $NewProcess\_VIS$.
+    .2 $NewProcess\_DNF\_1$.
+    .3 $NewProcess\_SP\_4$.
+    .4 $NewProcess\_SP\_4\_TCASE$.
+    .2 $NewProcess\_DNF\_2$.
+    .3 $NewProcess\_SP\_1$.
+    .4 $NewProcess\_SP\_1\_TCASE$.
+    .3 $NewProcess\_SP\_2$.
+    .4 $NewProcess\_SP\_2\_TCASE$.
+    .2 $NewProcess\_DNF\_3$.
+    .3 $NewProcess\_DNF\_3\_TCASE$.
+    .2 $NewProcess\_DNF\_4$.
+    .3 $NewProcess\_DNF\_4\_TCASE$.
+}
+\end{minipage}
+
+Notamos que no se generó un caso de prueba para la hoja \verb|NewProcess_SP_3|.
+
+Por último, se muestran los esquemas de los casos de prueba abstractos generados por \textsc{Fastest}.
+
+
+\begin{schema}{NewProcess\_ VIS}\\
+procQueue : \seq PROCESS \\
+current : PROCESS \\
+remTicks : TICK \\
+p? : PROCESS 
+\where
+( p? \notin \ran procQueue \\
+p? \neq current \\
+p? \neq nullp ) \lor p? \in \ran procQueue \lor p? = current \lor p? = nullp
+\end{schema}
+
+\begin{multicols}{2}
+
+\begin{schema}{NewProcess\_ DNF\_ 1}\\
+NewProcess\_ VIS 
+\where
+p? \notin \ran procQueue \\
+p? \neq current \\
+p? \neq nullp
+\end{schema}
+
+\begin{schema}{NewProcess\_ SP\_ 3}\\
+NewProcess\_ DNF\_ 1 
+\where
+\ran procQueue = \{ \}
+\end{schema}
+
+\begin{schema}{NewProcess\_ SP\_ 4}\\
+NewProcess\_ DNF\_ 1 
+\where
+\ran procQueue \neq \{ \}
+\end{schema}
+
+\begin{schema}{NewProcess\_ DNF\_ 2}\\
+NewProcess\_ VIS 
+\where
+p? \in \ran procQueue
+\end{schema}
+
+\begin{schema}{NewProcess\_ SP\_ 1}\\
+NewProcess\_ DNF\_ 2 
+\where
+\ran procQueue = \{ p? \}
+\end{schema}
+
+\begin{schema}{NewProcess\_ SP\_ 2}\\
+NewProcess\_ DNF\_ 2 
+\where
+\ran procQueue \neq \{ p? \} \\
+p? \in \ran procQueue
+\end{schema}
+
+\begin{schema}{NewProcess\_ DNF\_ 3}\\
+NewProcess\_ VIS 
+\where
+p? = current
+\end{schema}
+
+\begin{schema}{NewProcess\_ DNF\_ 4}\\
+NewProcess\_ VIS 
+\where
+p? = nullp
+\end{schema}
+
+\begin{schema}{NewProcess\_ SP\_ 4\_ TCASE}\\
+NewProcess\_ SP\_ 4
+\end{schema}
+
+\begin{schema}{NewProcess\_ SP\_ 1\_ TCASE}\\
+NewProcess\_ SP\_ 1
+\end{schema}
+
+\begin{schema}{NewProcess\_ SP\_ 2\_ TCASE}\\
+NewProcess\_ SP\_ 2
+\end{schema}
+
+\begin{schema}{NewProcess\_ DNF\_ 3\_ TCASE}\\
+NewProcess\_ DNF\_ 3
+\end{schema}
+
+\begin{schema}{NewProcess\_ DNF\_ 4\_ TCASE}\\
+NewProcess\_ DNF\_ 4
+\end{schema}
+
+\end{multicols}
 
 \end{document}
 

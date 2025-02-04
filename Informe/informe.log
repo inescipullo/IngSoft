@@ -1,10 +1,10 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.11.23)  3 FEB 2025 12:52
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.11.23)  4 FEB 2025 15:24
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
  %&-line parsing enabled.
-**"/Users/inescipullo/Documents_/Ingenieria de Software/TP Verificacion Software/Informe/informe.tex"
-(/Users/inescipullo/Documents_/Ingenieria de Software/TP Verificacion Software/Informe/informe.tex
+**"/Users/inescipullo/Documents_/Ingenieria de Software/IngSoft/Informe/informe.tex"
+(/Users/inescipullo/Documents_/Ingenieria de Software/IngSoft/Informe/informe.tex
 LaTeX2e <2022-11-01> patch level 1
 L3 programming layer <2023-02-22> (/usr/local/texlive/2023/texmf-dist/tex/latex/base/article.cls
 Document Class: article 2022/07/02 v1.4n Standard LaTeX document class
@@ -138,6 +138,8 @@ Package: framed 2011/10/22 v 0.96: framed or shaded text with page breaks
 \fb@frh=\dimen151
 \FrameRule=\dimen152
 \FrameSep=\dimen153
+) (/usr/local/texlive/2023/texmf-dist/tex/latex/tools/xspace.sty
+Package: xspace 2014/10/28 v1.13 Space after command names (DPC,MH)
 ) (/usr/local/texlive/2023/texmf-dist/tex/generic/dirtree/dirtree.sty
 Package: dirtree 2012/12/11 v0.32 package wrapper for dirtree
  (/usr/local/texlive/2023/texmf-dist/tex/generic/dirtree/dirtree.tex `dirtree' v0.32, 2012/12/11 (jcc)
@@ -157,9 +159,77 @@ Package: dirtree 2012/12/11 v0.32 package wrapper for dirtree
 \DT@baselineskip=\dimen163
 )
 File: dirtree.tex 2012/12/11 v0.32 `dirtree' (jcc)
+) (/usr/local/texlive/2023/texmf-dist/tex/latex/tools/multicol.sty
+Package: multicol 2021/11/30 v1.9d multicolumn formatting (FMi)
+\c@tracingmulticols=\count276
+\mult@box=\box53
+\multicol@leftmargin=\dimen164
+\c@unbalance=\count277
+\c@collectmore=\count278
+\doublecol@number=\count279
+\multicoltolerance=\count280
+\multicolpretolerance=\count281
+\full@width=\dimen165
+\page@free=\dimen166
+\premulticols=\dimen167
+\postmulticols=\dimen168
+\multicolsep=\skip68
+\multicolbaselineskip=\skip69
+\partial@page=\box54
+\last@line=\box55
+\maxbalancingoverflow=\dimen169
+\mult@rightbox=\box56
+\mult@grightbox=\box57
+\mult@firstbox=\box58
+\mult@gfirstbox=\box59
+\@tempa=\box60
+\@tempa=\box61
+\@tempa=\box62
+\@tempa=\box63
+\@tempa=\box64
+\@tempa=\box65
+\@tempa=\box66
+\@tempa=\box67
+\@tempa=\box68
+\@tempa=\box69
+\@tempa=\box70
+\@tempa=\box71
+\@tempa=\box72
+\@tempa=\box73
+\@tempa=\box74
+\@tempa=\box75
+\@tempa=\box76
+\@tempa=\box77
+\@tempa=\box78
+\@tempa=\box79
+\@tempa=\box80
+\@tempa=\box81
+\@tempa=\box82
+\@tempa=\box83
+\@tempa=\box84
+\@tempa=\box85
+\@tempa=\box86
+\@tempa=\box87
+\@tempa=\box88
+\@tempa=\box89
+\@tempa=\box90
+\@tempa=\box91
+\@tempa=\box92
+\@tempa=\box93
+\@tempa=\box94
+\@tempa=\box95
+\c@minrows=\count282
+\c@columnbadness=\count283
+\c@finalcolumnbadness=\count284
+\last@try=\dimen170
+\multicolovershoot=\dimen171
+\multicolundershoot=\dimen172
+\mult@nat@firstbox=\box96
+\colbreak@box=\box97
+\mc@col@check@num=\count285
 ) (./z-eves.sty
 Package: z-eves 97/09/18
-\c@mv@zed=\count276
+\c@mv@zed=\count286
 LaTeX Font Info:    Overwriting math alphabet `\mathrm' in version `zed'
 (Font)                  OT1/cmr/m/n --> OT1/cmr/m/n on input line 84.
 LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `zed'
@@ -390,22 +460,22 @@ LaTeX Font Info:    Redeclaring math symbol \varkappa on input line 306.
 LaTeX Font Info:    Redeclaring math symbol \hslash on input line 306.
 LaTeX Font Info:    Redeclaring math symbol \hbar on input line 306.
 LaTeX Font Info:    Redeclaring math symbol \backepsilon on input line 306.
-\zedindent=\dimen164
-\zedleftsep=\dimen165
-\zedtab=\dimen166
-\zedbar=\dimen167
-\zedskip=\skip68
-\interzedlinepenalty=\count277
-\preboxpenalty=\count278
+\zedindent=\dimen173
+\zedleftsep=\dimen174
+\zedtab=\dimen175
+\zedbar=\dimen176
+\zedskip=\skip70
+\interzedlinepenalty=\count287
+\preboxpenalty=\count288
 ) (/usr/local/texlive/2023/texmf-dist/tex/latex/base/fontenc.sty
 Package: fontenc 2021/04/29 v2.0v Standard LaTeX package
 ) (/usr/local/texlive/2023/texmf-dist/tex/latex/float/float.sty
 Package: float 2001/11/08 v1.3d Float enhancements (AL)
-\c@float@type=\count279
+\c@float@type=\count289
 \float@exts=\toks30
-\float@box=\box53
+\float@box=\box98
 \@float@everytoks=\toks31
-\@floatcapt=\box54
+\@floatcapt=\box99
 ) (/usr/local/texlive/2023/texmf-dist/tex/latex/graphics/graphicx.sty
 Package: graphicx 2021/09/16 v1.2d Enhanced LaTeX Graphics (DPC,SPQR)
  (/usr/local/texlive/2023/texmf-dist/tex/latex/graphics/keyval.sty
@@ -422,66 +492,66 @@ Package graphics Info: Driver file: pdftex.def on input line 107.
  (/usr/local/texlive/2023/texmf-dist/tex/latex/graphics-def/pdftex.def
 File: pdftex.def 2022/09/22 v1.2b Graphics/color driver for pdftex
 ))
-\Gin@req@height=\dimen168
-\Gin@req@width=\dimen169
+\Gin@req@height=\dimen177
+\Gin@req@width=\dimen178
 ) (/usr/local/texlive/2023/texmf-dist/tex/latex/caption/subcaption.sty
 Package: subcaption 2023/02/19 v1.6 Sub-captions (AR)
  (/usr/local/texlive/2023/texmf-dist/tex/latex/caption/caption.sty
 Package: caption 2023/03/12 v3.6j Customizing captions (AR)
  (/usr/local/texlive/2023/texmf-dist/tex/latex/caption/caption3.sty
 Package: caption3 2023/03/12 v2.4 caption3 kernel (AR)
-\caption@tempdima=\dimen170
-\captionmargin=\dimen171
-\caption@leftmargin=\dimen172
-\caption@rightmargin=\dimen173
-\caption@width=\dimen174
-\caption@indent=\dimen175
-\caption@parindent=\dimen176
-\caption@hangindent=\dimen177
+\caption@tempdima=\dimen179
+\captionmargin=\dimen180
+\caption@leftmargin=\dimen181
+\caption@rightmargin=\dimen182
+\caption@width=\dimen183
+\caption@indent=\dimen184
+\caption@parindent=\dimen185
+\caption@hangindent=\dimen186
 Package caption Info: Standard document class detected.
 )
-\c@caption@flags=\count280
-\c@continuedfloat=\count281
+\c@caption@flags=\count290
+\c@continuedfloat=\count291
 Package caption Info: float package is loaded.
 )
 Package caption Info: New subtype `subfigure' on input line 239.
-\c@subfigure=\count282
+\c@subfigure=\count292
 Package caption Info: New subtype `subtable' on input line 239.
-\c@subtable=\count283
+\c@subtable=\count293
 ) (/usr/local/texlive/2023/texmf-dist/tex/latex/mathtools/mathtools.sty
 Package: mathtools 2022/06/29 v1.29 mathematical typesetting tools
  (/usr/local/texlive/2023/texmf-dist/tex/latex/tools/calc.sty
 Package: calc 2017/05/25 v4.3 Infix arithmetic (KKT,FJ)
-\calc@Acount=\count284
-\calc@Bcount=\count285
-\calc@Adimen=\dimen178
-\calc@Bdimen=\dimen179
-\calc@Askip=\skip69
-\calc@Bskip=\skip70
+\calc@Acount=\count294
+\calc@Bcount=\count295
+\calc@Adimen=\dimen187
+\calc@Bdimen=\dimen188
+\calc@Askip=\skip71
+\calc@Bskip=\skip72
 LaTeX Info: Redefining \setlength on input line 80.
 LaTeX Info: Redefining \addtolength on input line 81.
-\calc@Ccount=\count286
-\calc@Cskip=\skip71
+\calc@Ccount=\count296
+\calc@Cskip=\skip73
 ) (/usr/local/texlive/2023/texmf-dist/tex/latex/mathtools/mhsetup.sty
 Package: mhsetup 2021/03/18 v1.4 programming setup (MH)
 )
-\g_MT_multlinerow_int=\count287
-\l_MT_multwidth_dim=\dimen180
-\origjot=\skip72
-\l_MT_shortvdotswithinadjustabove_dim=\dimen181
-\l_MT_shortvdotswithinadjustbelow_dim=\dimen182
-\l_MT_above_intertext_sep=\dimen183
-\l_MT_below_intertext_sep=\dimen184
-\l_MT_above_shortintertext_sep=\dimen185
-\l_MT_below_shortintertext_sep=\dimen186
-\xmathstrut@box=\box55
-\xmathstrut@dim=\dimen187
+\g_MT_multlinerow_int=\count297
+\l_MT_multwidth_dim=\dimen189
+\origjot=\skip74
+\l_MT_shortvdotswithinadjustabove_dim=\dimen190
+\l_MT_shortvdotswithinadjustbelow_dim=\dimen191
+\l_MT_above_intertext_sep=\dimen192
+\l_MT_below_intertext_sep=\dimen193
+\l_MT_above_shortintertext_sep=\dimen194
+\l_MT_below_shortintertext_sep=\dimen195
+\xmathstrut@box=\box100
+\xmathstrut@dim=\dimen196
 ) (/usr/local/texlive/2023/texmf-dist/tex/latex/l3packages/xparse/xparse.sty (/usr/local/texlive/2023/texmf-dist/tex/latex/l3kernel/expl3.sty
 Package: expl3 2023-02-22 L3 programming layer (loader) 
  (/usr/local/texlive/2023/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
 File: l3backend-pdftex.def 2023-01-16 L3 backend support: PDF output (pdfTeX)
-\l__color_backend_stack_int=\count288
-\l__pdf_internal_box=\box56
+\l__color_backend_stack_int=\count298
+\l__pdf_internal_box=\box101
 ))
 Package: xparse 2023-02-02 L3 Experimental document command parser
 ) (./informe.aux)
@@ -503,16 +573,16 @@ LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 63.
 LaTeX Font Info:    ... okay on input line 63.
  (/usr/local/texlive/2023/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count289
-\scratchdimen=\dimen188
-\scratchbox=\box57
-\nofMPsegments=\count290
-\nofMParguments=\count291
+\scratchcounter=\count299
+\scratchdimen=\dimen197
+\scratchbox=\box102
+\nofMPsegments=\count300
+\nofMParguments=\count301
 \everyMPshowfont=\toks33
-\MPscratchCnt=\count292
-\MPscratchDim=\dimen189
-\MPnumerator=\count293
-\makeMPintoPDFobject=\count294
+\MPscratchCnt=\count302
+\MPscratchDim=\dimen198
+\MPnumerator=\count303
+\makeMPintoPDFobject=\count304
 \everyMPtoPDFconversion=\toks34
 ) (/usr/local/texlive/2023/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty
 Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
@@ -528,7 +598,7 @@ File: header.png Graphic file (type png)
 Package pdftex.def Info: header.png  used on input line 66.
 (pdftex.def)             Requested size: 506.36606pt x 92.50453pt.
 
-Overfull \hbox (98.77008pt too wide) in paragraph at lines 66--67
+Overfull \hbox (78.85324pt too wide) in paragraph at lines 66--67
 [] [] 
  []
 
@@ -554,20 +624,45 @@ File: ulasy.fd 1998/08/17 v2.2e LaTeX symbol font definitions
 LaTeX Font Info:    Trying to load font information for T1+cmtt on input line 253.
  (/usr/local/texlive/2023/texmf-dist/tex/latex/base/t1cmtt.fd
 File: t1cmtt.fd 2022/07/10 v2.5l Standard LaTeX font definitions
-) [6] [7] [8] [9] [10] (./informe.aux) ) 
+) [6] [7] [8] [9] [10] [11] [12]
+Overfull \hbox (11.9553pt too wide) detected at line 503
+||[]$[]\OT1/cmr/m/it/10 NewProcess[]SP[]\OT1/cmr/m/n/10 4[]\OT1/cmr/m/it/10 TCASE$ 
+ []
+
+
+Overfull \hbox (11.9553pt too wide) detected at line 507
+||[]$[]\OT1/cmr/m/it/10 NewProcess[]SP[]\OT1/cmr/m/n/10 1[]\OT1/cmr/m/it/10 TCASE$ 
+ []
+
+
+Overfull \hbox (11.9553pt too wide) detected at line 511
+||[]$[]\OT1/cmr/m/it/10 NewProcess[]SP[]\OT1/cmr/m/n/10 2[]\OT1/cmr/m/it/10 TCASE$ 
+ []
+
+
+Overfull \hbox (21.36562pt too wide) detected at line 515
+||[]$[]\OT1/cmr/m/it/10 NewProcess[]DNF[]\OT1/cmr/m/n/10 3[]\OT1/cmr/m/it/10 TCASE$ 
+ []
+
+
+Overfull \hbox (21.36562pt too wide) detected at line 519
+||[]$[]\OT1/cmr/m/it/10 NewProcess[]DNF[]\OT1/cmr/m/n/10 4[]\OT1/cmr/m/it/10 TCASE$ 
+ []
+
+[13] (./informe.aux) ) 
 Here is how much of TeX's memory you used:
- 6109 strings out of 476025
- 99031 string characters out of 5790016
- 1858388 words of memory out of 5000000
- 26473 multiletter control sequences out of 15000+600000
- 524869 words of font info for 64 fonts, out of 8000000 for 9000
+ 6330 strings out of 476025
+ 102787 string characters out of 5790016
+ 1872388 words of memory out of 5000000
+ 26687 multiletter control sequences out of 15000+600000
+ 525542 words of font info for 65 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 67i,12n,77p,567b,399s stack positions out of 10000i,1000n,20000p,200000b,200000s
-</usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmss10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfbi1440.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfbx1000.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfbx1200.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfbx1440.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfbx2488.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfrm1000.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfti1000.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sftt1000.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfxc1440.pfb>
-Output written on informe.pdf (11 pages, 328245 bytes).
+ 67i,12n,77p,550b,399s stack positions out of 10000i,1000n,20000p,200000b,200000s
+</usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmss10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfbi1440.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfbx1000.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfbx1200.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfbx1440.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfbx2488.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfcc1000.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfrm1000.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfti1000.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sftt1000.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfxc1440.pfb>
+Output written on informe.pdf (14 pages, 348021 bytes).
 PDF statistics:
- 138 PDF objects out of 1000 (max. 8388607)
- 85 compressed objects within 1 object stream
+ 153 PDF objects out of 1000 (max. 8388607)
+ 95 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  6 words of extra memory for PDF output out of 10000 (max. 10000000)
 
