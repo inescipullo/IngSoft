@@ -100,7 +100,7 @@ Para empezar, se dan las siguientes designaciones.
 \desig{$t$ es un contador de ticks del sistema}{t \in TICK}
 \desig{proceso nulo}{nullp}
 \desig{cantidad de tiempo durante el cual un proceso tiene permiso para ejecutarse en el procesador antes de ser interrumpido}{quantum}
-\desig{cola de procesos listos para ser ejecutados}{procQueue}
+\desig{procesos en estado listo (para ser ejecutados)}{procQueue}
 \desig{proceso en ejecución}{current}
 \desig{contador de ticks restantes de ejecución que le corresponden a $current$}{remTicks}
 \end{designations}
@@ -128,7 +128,7 @@ Adem\'as, se presentan las siguientes definiciones axiom\'aticas, donde se defin
 Se define entonces el espacio de estados del planificador y su estado inicial.
 
 \begin{schema}{Dispatcher}
-    procQueue : \seq \langle PROCESS \rangle \\
+    procQueue : \nat \pinj PROCESS \\
     current : PROCESS \\
     remTicks : TICK
 \end{schema}
@@ -136,7 +136,7 @@ Se define entonces el espacio de estados del planificador y su estado inicial.
 \begin{schema}{InitDispatcher}
     Dispatcher
 \where
-    procQueue = \langle \rangle \\
+    procQueue = \emptyset \\
     current = nullp \\
     remTicks = 0
 \end{schema}
@@ -146,8 +146,8 @@ Como un proceso no puede estar \textit{en ejecución} y \textit{listo} al mismo 
 \begin{schema}{InvDispatcher}
     Dispatcher
 \where
-    \lnot \langle nullp \rangle \inseq procQueue \\
-    \lnot \langle current \rangle \inseq procQueue
+    current \notin \ran procQueue \\
+    nullp \notin \ran procQueue
 \end{schema}
 
 Procedemos con la especificación de las operaciones requeridas. Estas son:
@@ -161,10 +161,24 @@ Procedemos con la especificación de las operaciones requeridas. Estas son:
     \Delta Dispatcher \\
     p? : PROCESS
 \where
+    procQueue \neq \emptyset \\
     p? \notin \ran procQueue \\
     p? \neq current \\
     p? \neq nullp \\
-    procQueue' = procQueue \cat \langle p? \rangle \\
+    procQueue' = procQueue \cup \{max~(\dom procQueue) + 1 \mapsto p?\} \\
+    current' = current \\
+    remTicks' = remTicks
+\end{schema}
+
+\begin{schema}{newProcessOkEmptyQueue}
+    \Delta Dispatcher \\
+    p? : PROCESS
+\where
+    procQueue = \emptyset \\
+    p? \notin \ran procQueue \\
+    p? \neq current \\
+    p? \neq nullp \\
+    procQueue' = \{1 \mapsto p?\} \\
     current' = current \\
     remTicks' = remTicks
 \end{schema}
@@ -177,7 +191,7 @@ Procedemos con la especificación de las operaciones requeridas. Estas son:
 \end{schema}
 
 \begin{zed}
-    NewProcess == NewProcessOk \lor NewProcessError
+    NewProcess == NewProcessOk \lor newProcessOkEmptyQueue \lor NewProcessError
 \end{zed}
 
 \begin{schema}{Tick}
@@ -193,9 +207,21 @@ Procedemos con la especificación de las operaciones requeridas. Estas son:
 \begin{schema}{Timeout}
     \Delta Dispatcher
 \where
+    procQueue \neq \emptyset \\
     remTicks = 0 \\
     current \neq nullp \\
-    procQueue' = procQueue \cat \langle current \rangle \\
+    procQueue' = procQueue \cup \{max~(\dom procQueue) + 1 \mapsto current\} \\
+    current' = nullp \\
+    remTicks' = remTicks 
+\end{schema}
+
+\begin{schema}{TimeoutEmptyQueue}
+    \Delta Dispatcher
+\where
+    procQueue = \emptyset \\
+    remTicks = 0 \\
+    current \neq nullp \\
+    procQueue' = \{1 \mapsto current\} \\
     current' = nullp \\
     remTicks' = remTicks 
 \end{schema}
@@ -204,9 +230,9 @@ Procedemos con la especificación de las operaciones requeridas. Estas son:
     \Delta Dispatcher
 \where
     current = nullp \\
-    procQueue \neq \langle \rangle \\
-    procQueue' = tail~procQueue \\
-    current' = head~procQueue \\
+    procQueue \neq \emptyset \\
+    procQueue' = procQueue \setminus \{min~(\dom procQueue) \mapsto procQueue(min~(\dom procQueue))\} \\
+    current' = procQueue(min~(\dom procQueue)) \\
     remTicks' = remTicks 
 \end{schema}
 
@@ -214,11 +240,11 @@ Procedemos con la especificación de las operaciones requeridas. Estas son:
     \Xi Dispatcher
 \where
     current = nullp \\
-    procQueue = \langle \rangle
+    procQueue = \emptyset
 \end{schema}
 
 \begin{zed}
-    Dispatch == Tick \lor Timeout \lor DispatchProcess \lor Idle
+    Dispatch == Tick \lor Timeout \lor TimeoutEmptyQueue \lor DispatchProcess \lor Idle
 \end{zed}
 
 \begin{schema}{TerminateProcessOk}
@@ -245,24 +271,28 @@ Procedemos con la especificación de las operaciones requeridas. Estas son:
 
 \section{Simulaciones en \textit{\{log\}}}
 
-Se traduce la especificación a \textit{\{log\}} (en \textbf{planificador.slog}). A continuación, se presentan dos simulaciones ejecutadas sobre \textit{\{log\}} y la primera solución de cada una.
+Se traduce la especificación a \textit{\{log\}} (en \textbf{planificador.slog}), la cual pasa el \textbf{type\_check}. A continuación, se presentan dos simulaciones ejecutadas sobre \textit{\{log\}} y la primera solución de cada una.
 
 
 \subsection*{1ra simulación}
 
 \begin{verbatim}
-    initDispatcher(PQ0, C0, RT0)               & 
-    newProcess(PQ0, C0, RT0, p1, PQ1, C1, RT1) & 
-    dispatch(PQ1, C1, RT1, PQ2, C2, RT2)       &
-    dispatch(PQ2, C2, RT2, PQ3, C3, RT3)       &
-    dispatch(PQ3, C3, RT3, PQ4, C4, RT4)       &
-    dispatch(PQ4, C4, RT4, PQ5, C5, RT5)       &
-    dispatch(PQ5, C5, RT5, PQ6, C6, RT6)       &
-    dispatch(PQ6, C6, RT6, PQ7, C7, RT7)       &
-    dispatch(PQ7, C7, RT7, PQ8, C8, RT8). 
+    dec([PQ0, PQ1, PQ2, PQ3, PQ4, PQ5, PQ6, PQ7, PQ8, PQ9], t_proc_queue) &
+    dec([C0, C1, C2, C3, C4, C5, C6, C7, C8, C9], process)                &
+    dec([RT0, RT1, RT2, RT3, RT4, RT5, RT6, RT7, RT8, RT9], t_tick)       &
+    initDispatcher(PQ0, C0, RT0)                                          & 
+    newProcess(PQ0, C0, RT0, p1, PQ1, C1, RT1)                            & 
+    newProcess(PQ1, C1, RT1, p2, PQ2, C2, RT2)                            & 
+    dispatch(PQ2, C2, RT2, PQ3, C3, RT3)                                  & 
+    dispatch(PQ3, C3, RT3, PQ4, C4, RT4)                                  & 
+    dispatch(PQ4, C4, RT4, PQ5, C5, RT5)                                  & 
+    dispatch(PQ5, C5, RT5, PQ6, C6, RT6)                                  & 
+    dispatch(PQ6, C6, RT6, PQ7, C7, RT7)                                  & 
+    dispatch(PQ7, C7, RT7, PQ8, C8, RT8)                                  & 
+    dispatch(PQ8, C8, RT8, PQ9, C9, RT9).
 \end{verbatim}
 
-La idea de esta simulación es encolar un nuevo proceso \textbf{p1} en la cola de procesos listos, luego iniciar su ejecución hasta que termine el tiempo de ejecución asignado (1 \textbf{quantum}) y sea interrumpido por el dispatcher. El resultado es el esperado:
+La idea de esta simulación es encolar dos nuevos procesos, \textbf{p1} y \textbf{p2}, en la cola de procesos listos, luego iniciar la ejecución del primero hasta que termine el tiempo de ejecución asignado (1 \textbf{quantum}) y sea interrumpido por el dispatcher. El resultado es el esperado:
 
 \begin{verbatim}
     PQ0 = {},  
@@ -271,27 +301,33 @@ La idea de esta simulación es encolar un nuevo proceso \textbf{p1} en la cola d
     PQ1 = {[1,p1]},  
     C1 = nullp,  
     RT1 = 0,  
-    PQ2 = {},  
-    C2 = p1,  
-    RT2 = 5,  
-    PQ3 = {},  
+    PQ2 = {[1,p1],[2,p2]},  
+    C2 = nullp,  
+    RT2 = 0,  
+    PQ3 = {[2,p2]/_N1},  
     C3 = p1,  
-    RT3 = 4,  
-    PQ4 = {},  
+    RT3 = 5,  
+    PQ4 = {[2,p2]/_N1},  
     C4 = p1,  
-    RT4 = 3,  
-    PQ5 = {},  
+    RT4 = 4,  
+    PQ5 = {[2,p2]/_N1},  
     C5 = p1,  
-    RT5 = 2,  
-    PQ6 = {},  
+    RT5 = 3,  
+    PQ6 = {[2,p2]/_N1},  
     C6 = p1,  
-    RT6 = 1,  
-    PQ7 = {},  
+    RT6 = 2,  
+    PQ7 = {[2,p2]/_N1},  
     C7 = p1,  
-    RT7 = 0,  
-    PQ8 = {[1,p1]},  
-    C8 = nullp,  
-    RT8 = 0
+    RT7 = 1,  
+    PQ8 = {[2,p2]/_N1},  
+    C8 = p1,  
+    RT8 = 0,  
+    PQ9 = {[3,p1],[2,p2]/_N1},  
+    C9 = nullp,  
+    RT9 = 0
+    Constraint: subset(_N1,{[1,p1],[2,p2]}), [1,p1]nin _N1, 
+    set(_N1), dom(_N1,_N2), set(_N2), foreach(_X in _N2,2>=_X), 
+    rel(_N1)
 \end{verbatim}
 
 
@@ -301,7 +337,7 @@ La idea de esta simulación es encolar un nuevo proceso \textbf{p1} en la cola d
     initDispatcher(PQ0, C0, RT0)                  & 
     newProcess(PQ0, C0, RT0, p1, PQ1, C1, RT1)    & 
     newProcess(PQ1, C1, RT1, p2, PQ2, C2, RT2)    & 
-    dispatch(PQ2, C2, RT2, PQ3, C3, RT3)          &  
+    dispatch(PQ2, C2, RT2, PQ3, C3, RT3)          & 
     dispatch(PQ3, C3, RT3, PQ4, C4, RT4)          & 
     terminateProc(PQ4, C4, RT4, p1, PQ5, C5, RT5) & 
     dispatch(PQ5, C5, RT5, PQ6, C6, RT6). 
@@ -316,21 +352,24 @@ La idea de esta simulación es encolar dos nuevos procesos, \textbf{p1} y \textb
     PQ1 = {[1,p1]},  
     C1 = nullp,  
     RT1 = 0,  
-    PQ2 = {[2,p2],[1,p1]},  
+    PQ2 = {[1,p1],[2,p2]},  
     C2 = nullp,  
     RT2 = 0,  
-    PQ3 = {[1,p2]},  
+    PQ3 = {[2,p2]/_N1},  
     C3 = p1,  
     RT3 = 5,  
-    PQ4 = {[1,p2]},  
+    PQ4 = {[2,p2]/_N1},  
     C4 = p1,  
     RT4 = 4,  
-    PQ5 = {[1,p2]},  
+    PQ5 = {[2,p2]/_N1},  
     C5 = nullp,  
     RT5 = 0,  
-    PQ6 = {},  
     C6 = p2,  
     RT6 = 5
+    Constraint: subset(_N1,{[1,p1],[2,p2]}), [1,p1]nin _N1, 
+    set(_N1), dom(_N1,_N2), set(_N2), foreach(_X in _N2,2=<_X), 
+    pfun(_N1), comppf({[2,2]},_N1,{}), subset(PQ6,{[2,p2]/_N1}), 
+    subset(_N1,{[2,p2]/PQ6}), [2,p2]nin PQ6, rel(_N1), set(PQ6)
 \end{verbatim}
 
 
@@ -343,13 +382,13 @@ Se utiliza el VCG para generar condiciones de verificación sobre la especificac
 En una primera iteración del comando \verb|check_vcs_planificador|, hubo algunas condiciones de verificación que no fueron descargadas exitosamente. Por lo que fue necesario agregar las siguientes hipótesis en las condición de verificación que lo requerían:
 
 \begin{itemize}
-    \item hipótesis \verb|invSeq(ProcQueue)| en \verb|newProcess_pi_invPFun|
-    \item hipótesis \verb|invSeq(ProcQueue)| en \verb|dispatch_pi_invPFun|
     \item hipótesis \verb|invDispatcher(ProcQueue, Current)| en \verb|dispatch_pi_invIny|
     \item hipótesis \verb|invIny(ProcQueue)| en \verb|dispatch_pi_invDispatcher|
 \end{itemize}
 
-En todos los casos plantee las negaciones de los enunciados y analicé los contraejemplos que presentaban para saber que hipótesis era necesario agregar. No fue necesario utilizar el comando \verb|findh|.
+En ambos casos plantee la negación del enunciado y analicé el contraejemplos que presentaba para saber que hipótesis era necesario agregar. No fue necesario utilizar el comando \verb|findh|.
+
+También fue necesario aumentar el timeout para que se logren descargar algunas pruebas, esto lo hice modificando el argumento de \verb|def_to|.
 
 \section{Demostración en \textit{Z/EVES}}
 
@@ -376,7 +415,7 @@ Utilizando el asistente de pruebas \textit{Z/EVES}, vamos a demostrar que la ope
     next;
 \end{zproof}
 
-\section{Casos de Prueba con \textsc{Fastest} (WIP)}
+\section{Casos de Prueba con \textsc{Fastest}}
 
 Se generan casos de prubea utilizando la herramienta \textsc{Fastest} para la operación \verb|NewProcess|.
 
@@ -387,27 +426,28 @@ Se generan casos de prubea utilizando la herramienta \textsc{Fastest} para la op
     selop NewProcess
     genalltt
     addtactic NewProcess_DNF_1 SP \notin p? \notin \ran procQueue
-    addtactic NewProcess_DNF_2 SP \in p? \in \ran procQueue
+    addtactic NewProcess_DNF_3 SP \in p? \in \ran procQueue
     genalltt
     genalltca
 \end{verbatim}
 
 Con estos comandos se carga la especificación, se selecciona la operación para la cual generar los casos de prueba y se aplican las tacticas de testing.
 En primer lugar, se aplica \textit{Disjunctive Normal Form (DNF)}, que lleva la operación a su forma normal disyuntiva, ya que es la táctica por defecto que aplica \textsc{Fastest} al ejecutar el comando \verb|genalltt|. 
-Esto particiona la operación de acuerdo a las precondiciones de las suboperaciones que la definen, donde \textit{NewProcess\_DNF\_1} corresponde a \textit{newProcessOk}, y las tres restantes corresponden a las tres alternativas de \textit{newProcessError}.
+Esto particiona la operación de acuerdo a las precondiciones de las suboperaciones que la definen, donde \textit{NewProcess\_DNF\_1} corresponde a \textit{newProcessOk}, \textit{NewProcess\_DNF\_2} corresponde a \textit{newProcessOkEmptyQueue} y las tres restantes corresponden a las tres alternativas de \textit{newProcessError}.
 Luego, se aplican las tacticas de partición estándar (\textit{Standard Partition (SP)}) de $\not\in$ y $\in$, donde resulta útil. Se obtiene el siguiente árbol:
 
 \begin{minipage}{5cm}
 \dirtree{%
     .1 $NewProcess\_VIS$.
     .2 $NewProcess\_DNF\_1$.
-    .3 $NewProcess\_SP\_3$.
-    .3 $NewProcess\_SP\_4$.
-    .2 $NewProcess\_DNF\_2$.
     .3 $NewProcess\_SP\_1$.
     .3 $NewProcess\_SP\_2$.
+    .2 $NewProcess\_DNF\_2$.
     .2 $NewProcess\_DNF\_3$.
+    .3 $NewProcess\_SP\_3$.
+    .3 $NewProcess\_SP\_4$.
     .2 $NewProcess\_DNF\_4$.
+    .2 $NewProcess\_DNF\_5$.
 }
 \end{minipage}
 
@@ -417,32 +457,38 @@ Finalmente se generan los casos de prueba, obteniendo el siguiente árbol de cla
 \dirtree{%
     .1 $NewProcess\_VIS$.
     .2 $NewProcess\_DNF\_1$.
-    .3 $NewProcess\_SP\_4$.
-    .4 $NewProcess\_SP\_4\_TCASE$.
-    .2 $NewProcess\_DNF\_2$.
-    .3 $NewProcess\_SP\_1$.
-    .4 $NewProcess\_SP\_1\_TCASE$.
     .3 $NewProcess\_SP\_2$.
     .4 $NewProcess\_SP\_2\_TCASE$.
+    .2 $NewProcess\_DNF\_2$.
+    .3 $NewProcess\_DNF\_2\_TCASE$.
     .2 $NewProcess\_DNF\_3$.
-    .3 $NewProcess\_DNF\_3\_TCASE$.
+    .3 $NewProcess\_SP\_3$.
+    .4 $NewProcess\_SP\_3\_TCASE$.
+    .3 $NewProcess\_SP\_4$.
+    .4 $NewProcess\_SP\_4\_TCASE$.
     .2 $NewProcess\_DNF\_4$.
     .3 $NewProcess\_DNF\_4\_TCASE$.
+    .2 $NewProcess\_DNF\_5$.
+    .3 $NewProcess\_DNF\_5\_TCASE$.
 }
 \end{minipage}
 
-Notamos que no se generó un caso de prueba para la hoja \verb|NewProcess_SP_3|.
+Notamos que no se generó un caso de prueba para la hoja \verb|NewProcess_SP_1|. Esto es porque es una clase de prueba vacía, ya que contiene tanto $procQueue \neq \{\}$ y $procQueue = \{\}$ como precondiciones.
 
 Por último, se muestran los esquemas de los casos de prueba abstractos generados por \textsc{Fastest}.
 
 
 \begin{schema}{NewProcess\_ VIS}\\
-procQueue : \seq PROCESS \\
+procQueue : \nat \pinj PROCESS \\
 current : PROCESS \\
 remTicks : TICK \\
 p? : PROCESS 
 \where
-( p? \notin \ran procQueue \\
+( procQueue \neq \{ \} \\
+p? \notin \ran procQueue \\
+p? \neq current \\
+p? \neq nullp ) \lor ( procQueue = \{ \} \\
+p? \notin \ran procQueue \\
 p? \neq current \\
 p? \neq nullp ) \lor p? \in \ran procQueue \lor p? = current \lor p? = nullp
 \end{schema}
@@ -452,18 +498,19 @@ p? \neq nullp ) \lor p? \in \ran procQueue \lor p? = current \lor p? = nullp
 \begin{schema}{NewProcess\_ DNF\_ 1}\\
 NewProcess\_ VIS 
 \where
+procQueue \neq \{ \} \\
 p? \notin \ran procQueue \\
 p? \neq current \\
 p? \neq nullp
 \end{schema}
 
-\begin{schema}{NewProcess\_ SP\_ 3}\\
+\begin{schema}{NewProcess\_ SP\_ 1}\\
 NewProcess\_ DNF\_ 1 
 \where
 \ran procQueue = \{ \}
 \end{schema}
 
-\begin{schema}{NewProcess\_ SP\_ 4}\\
+\begin{schema}{NewProcess\_ SP\_ 2}\\
 NewProcess\_ DNF\_ 1 
 \where
 \ran procQueue \neq \{ \}
@@ -472,52 +519,65 @@ NewProcess\_ DNF\_ 1
 \begin{schema}{NewProcess\_ DNF\_ 2}\\
 NewProcess\_ VIS 
 \where
-p? \in \ran procQueue
-\end{schema}
-
-\begin{schema}{NewProcess\_ SP\_ 1}\\
-NewProcess\_ DNF\_ 2 
-\where
-\ran procQueue = \{ p? \}
-\end{schema}
-
-\begin{schema}{NewProcess\_ SP\_ 2}\\
-NewProcess\_ DNF\_ 2 
-\where
-\ran procQueue \neq \{ p? \} \\
-p? \in \ran procQueue
+procQueue = \{ \} \\
+p? \notin \ran procQueue \\
+p? \neq current \\
+p? \neq nullp
 \end{schema}
 
 \begin{schema}{NewProcess\_ DNF\_ 3}\\
 NewProcess\_ VIS 
 \where
-p? = current
+p? \in \ran procQueue
+\end{schema}
+
+\begin{schema}{NewProcess\_ SP\_ 3}\\
+NewProcess\_ DNF\_ 3 
+\where
+\ran procQueue = \{ p? \}
+\end{schema}
+
+\begin{schema}{NewProcess\_ SP\_ 4}\\
+NewProcess\_ DNF\_ 3 
+\where
+\ran procQueue \neq \{ p? \} \\
+p? \in \ran procQueue
 \end{schema}
 
 \begin{schema}{NewProcess\_ DNF\_ 4}\\
 NewProcess\_ VIS 
 \where
+p? = current
+\end{schema}
+
+\begin{schema}{NewProcess\_ DNF\_ 5}\\
+NewProcess\_ VIS 
+\where
 p? = nullp
-\end{schema}
-
-\begin{schema}{NewProcess\_ SP\_ 4\_ TCASE}\\
-NewProcess\_ SP\_ 4
-\end{schema}
-
-\begin{schema}{NewProcess\_ SP\_ 1\_ TCASE}\\
-NewProcess\_ SP\_ 1
 \end{schema}
 
 \begin{schema}{NewProcess\_ SP\_ 2\_ TCASE}\\
 NewProcess\_ SP\_ 2
 \end{schema}
 
-\begin{schema}{NewProcess\_ DNF\_ 3\_ TCASE}\\
-NewProcess\_ DNF\_ 3
+\begin{schema}{NewProcess\_ DNF\_ 2\_ TCASE}\\
+NewProcess\_ DNF\_ 2
+\end{schema}
+
+\begin{schema}{NewProcess\_ SP\_ 3\_ TCASE}\\
+NewProcess\_ SP\_ 3
+\end{schema}
+
+\begin{schema}{NewProcess\_ SP\_ 4\_ TCASE}\\
+NewProcess\_ SP\_ 4
 \end{schema}
 
 \begin{schema}{NewProcess\_ DNF\_ 4\_ TCASE}\\
 NewProcess\_ DNF\_ 4
+\end{schema}
+
+\begin{schema}{NewProcess\_ DNF\_ 5\_ TCASE}\\
+NewProcess\_ DNF\_ 5
 \end{schema}
 
 \end{multicols}

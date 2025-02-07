@@ -15,7 +15,7 @@
 \end{axdef}
 
 \begin{schema}{Dispatcher}
-    procQueue : \seq PROCESS \\
+    procQueue : \nat \pfun PROCESS \\
     current : PROCESS \\
     remTicks : TICK
 \end{schema}
@@ -23,7 +23,7 @@
 \begin{schema}{InitDispatcher}
     Dispatcher
 \where
-    procQueue = \langle \rangle \\
+    procQueue = \emptyset \\
     current = nullp \\
     remTicks = 0
 \end{schema}
@@ -31,18 +31,32 @@
 \begin{schema}{InvDispatcher}
     Dispatcher
 \where
-	\lnot (\langle nullp \rangle \inseq procQueue) \\
-	\lnot (\langle current \rangle \inseq procQueue)
+    current \notin \ran procQueue \\
+    nullp \notin \ran procQueue
 \end{schema}
 
 \begin{schema}{NewProcessOk}
     \Delta Dispatcher \\
     p? : PROCESS
 \where
+    procQueue \neq \emptyset \\
     p? \notin \ran procQueue \\
     p? \neq current \\
     p? \neq nullp \\
-    procQueue' = procQueue \cat \langle p? \rangle \\
+    procQueue' = procQueue \cup \{max~(\dom procQueue) + 1 \mapsto p?\} \\
+    current' = current \\
+    remTicks' = remTicks
+\end{schema}
+
+\begin{schema}{newProcessOkEmptyQueue}
+    \Delta Dispatcher \\
+    p? : PROCESS
+\where
+    procQueue = \emptyset \\
+    p? \notin \ran procQueue \\
+    p? \neq current \\
+    p? \neq nullp \\
+    procQueue' = \{1 \mapsto p?\} \\
     current' = current \\
     remTicks' = remTicks
 \end{schema}
@@ -51,11 +65,11 @@
     \Xi Dispatcher \\
     p? : PROCESS
 \where
-    p? \in \ran procQueue \lor p? = current \lor p? = nullp \\
+    p? \in \ran procQueue \lor p? = current \lor p? = nullp
 \end{schema}
 
 \begin{zed}
-    NewProcess \defs NewProcessOk \lor NewProcessError
+    NewProcess \defs NewProcessOk \lor newProcessOkEmptyQueue \lor NewProcessError
 \end{zed}
 
 \begin{schema}{Tick}
@@ -71,9 +85,21 @@
 \begin{schema}{Timeout}
     \Delta Dispatcher
 \where
+    procQueue \neq \emptyset \\
     remTicks = 0 \\
     current \neq nullp \\
-    procQueue' = procQueue \cat \langle current \rangle \\
+    procQueue' = procQueue \cup \{max~(\dom procQueue) + 1 \mapsto current\} \\
+    current' = nullp \\
+    remTicks' = remTicks 
+\end{schema}
+
+\begin{schema}{TimeoutEmptyQueue}
+    \Delta Dispatcher
+\where
+    procQueue = \emptyset \\
+    remTicks = 0 \\
+    current \neq nullp \\
+    procQueue' = \{1 \mapsto current\} \\
     current' = nullp \\
     remTicks' = remTicks 
 \end{schema}
@@ -82,9 +108,9 @@
     \Delta Dispatcher
 \where
     current = nullp \\
-    procQueue \neq \langle \rangle \\
-    procQueue' = procQueue \cat \langle current \rangle \\
-    current' = nullp \\
+    procQueue \neq \emptyset \\
+    procQueue' = procQueue \setminus \{min~(\dom procQueue) \mapsto procQueue(min~(\dom procQueue))\} \\
+    current' = procQueue(min~(\dom procQueue)) \\
     remTicks' = remTicks 
 \end{schema}
 
@@ -92,11 +118,11 @@
     \Xi Dispatcher
 \where
     current = nullp \\
-    procQueue = \langle \rangle
+    procQueue = \emptyset
 \end{schema}
 
 \begin{zed}
-    Dispatch \defs Tick \lor Timeout \lor DispatchProcess \lor Idle
+    Dispatch \defs Tick \lor Timeout \lor TimeoutEmptyQueue \lor DispatchProcess \lor Idle
 \end{zed}
 
 \begin{schema}{TerminateProcessOk}
