@@ -1,6 +1,7 @@
 # TP Verificación de Software
 
 Trabajo Práctico individual que nuclea conceptos dados en Ingeniería de Software I e Ingeniería de Software II.
+Consiste en plantear los requerimientos de un problema, dar la especificación en Z, simulaciones y demostraciones de lemas de invarianza con {log} y Z/Eves, y testing con Fastest.
 
 ### Ingeniería de Software I
 https://www.fceia.unr.edu.ar/asist/index.html
@@ -12,6 +13,10 @@ https://www.fceia.unr.edu.ar/ingsoft/
 # Comandos Utilizados
 
 ## {log}
+
+{log} Version 4.9.8 Release 15h
+
+SWI-Prolog version 9.2.9 for x86_64-linux
 
 ```
 $ swipl
@@ -26,6 +31,8 @@ $ swipl
 ```
 
 ## Z/Eves
+
+Está en el labdcc, no vale la pena intentar descargarlo :)
 
 ```
 $ z-eves
@@ -48,6 +55,8 @@ $ z-eves
 ```
 
 ## Fastest
+
+Fastest Version 1.7
 
 ```
 $ java -jar fastest.jar
