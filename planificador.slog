@@ -3,10 +3,10 @@ def_type(t_proc_queue, set([int, process])).
 
 def_type(t_tick, int).
 
+parameters([Quantum]).
+
 % ESTADO
 variables([ProcQueue, Current, RemTicks]).
-
-parameters([Quantum]).
 
 % DEFINICION AXIOMATICA
 axiom(quantum).
@@ -21,12 +21,12 @@ invPFun(ProcQueue) :- pfun(ProcQueue).
 dec_p_type(n_invPFun(t_proc_queue)).
 n_invPFun(ProcQueue) :- npfun(ProcQueue).
 
-% invariant(invIny).
-% dec_p_type(invIny(t_proc_queue)).
-% invIny(ProcQueue) :- let([Inv], inv(ProcQueue, Inv), pfun(Inv)).
+invariant(invIny).
+dec_p_type(invIny(t_proc_queue)).
+invIny(ProcQueue) :- let([Inv], dec(Inv, set([process, int])) & inv(ProcQueue, Inv), pfun(Inv)).
 
-% dec_p_type(n_invIny(t_proc_queue)).
-% n_invIny(ProcQueue) :- neg(let([Inv], inv(ProcQueue, Inv), pfun(Inv))).
+dec_p_type(n_invIny(t_proc_queue)).
+n_invIny(ProcQueue) :- neg(let([Inv], dec(Inv, set([process, int])) & inv(ProcQueue, Inv), pfun(Inv))).
 
 invariant(invNat).
 dec_p_type(invNat(t_tick)).
@@ -37,44 +37,48 @@ n_invNat(RemTicks) :- neg(RemTicks >= 0).
 
 invariant(invDispatcher).
 dec_p_type(invDispatcher(t_proc_queue, process)).
-invDispatcher(ProcQueue, Current) :- let([Ran], ran(ProcQueue, Ran), Current nin Ran & nullp nin Ran).
+invDispatcher(ProcQueue, Current) :- let([Ran], dec(Ran, set(process)) & ran(ProcQueue, Ran), Current nin Ran & process:nullp nin Ran).
 
 dec_p_type(n_invDispatcher(t_proc_queue, process)).
-n_invDispatcher(ProcQueue, Current) :- neg(let([Ran], ran(ProcQueue, Ran), Current nin Ran & nullp nin Ran)).
+n_invDispatcher(ProcQueue, Current) :- neg(let([Ran], dec(Ran, set(process)) & ran(ProcQueue, Ran), Current nin Ran & process:nullp nin Ran)).
 
 % ESTADO INICIAL
 initial(initDispatcher).
 dec_p_type(initDispatcher(t_proc_queue, process, t_tick)).
 initDispatcher(ProcQueue, Current, RemTicks) :-
     ProcQueue = {} &
-    Current = nullp &
+    Current = process:nullp &
     RemTicks = 0.
 
 % OPERACIONES
 
 %%% newProcess %%%
+dec_p_type(newProcessOk(t_proc_queue, process, t_tick, process, t_proc_queue, process, t_tick)).
 newProcessOk(ProcQueue, Current, RemTicks, NewProc, ProcQueue_, Current_, RemTicks_) :-
     ProcQueue neq {} &
-    ran(ProcQueue, Ran) & set(Ran) & NewProc nin Ran &
+    dec(Ran, set(process)) & ran(ProcQueue, Ran) & NewProc nin Ran &
     NewProc neq Current &
-    NewProc neq nullp &
-    dom(ProcQueue, Dom) & set(Dom) & smax(Dom, Max) & 
+    NewProc neq process:nullp &
+    dec(Dom, set(int)) & dom(ProcQueue, Dom) & 
+    dec(Max, int) & smax(Dom, Max) & 
     Max1 is Max+1 & dec(Max1, int) &
     un(ProcQueue, {[Max1, NewProc]}, ProcQueue_) &
     Current_ = Current &
     RemTicks_ = RemTicks.
 
+dec_p_type(newProcessOkEmptyQueue(t_proc_queue, process, t_tick, process, t_proc_queue, process, t_tick)).
 newProcessOkEmptyQueue(ProcQueue, Current, RemTicks, NewProc, ProcQueue_, Current_, RemTicks_) :-
     ProcQueue = {} &
-    ran(ProcQueue, Ran) & set(Ran) & NewProc nin Ran &
+    dec(Ran, set(process)) & ran(ProcQueue, Ran) & NewProc nin Ran &
     NewProc neq Current &
-    NewProc neq nullp &
+    NewProc neq process:nullp &
     ProcQueue_ = {[1, NewProc]} &
     Current_ = Current &
     RemTicks_ = RemTicks.
 
+dec_p_type(newProcessError(t_proc_queue, process, t_tick, process, t_proc_queue, process, t_tick)).
 newProcessError(ProcQueue, Current, RemTicks, NewProc, ProcQueue_, Current_, RemTicks_) :-
-    ((ran(ProcQueue, Ran) & set(Ran) & NewProc in Ran) or NewProc = Current or NewProc = nullp) &
+    ((dec(Ran, set(process)) & ran(ProcQueue, Ran) & NewProc in Ran) or NewProc = Current or NewProc = process:nullp) &
     ProcQueue_ = ProcQueue &
     Current_ = Current &
     RemTicks_ = RemTicks.
@@ -89,44 +93,51 @@ newProcess(ProcQueue, Current, RemTicks, NewProc, ProcQueue_, Current_, RemTicks
     newProcessError(ProcQueue, Current, RemTicks, NewProc, ProcQueue_, Current_, RemTicks_).
 
 %%% dispatch %%%
+dec_p_type(tick(t_proc_queue, process, t_tick, t_proc_queue, process, t_tick)).
 tick(ProcQueue, Current, RemTicks, ProcQueue_, Current_, RemTicks_) :-
     RemTicks > 0 &
-    Current neq nullp &
+    Current neq process:nullp &
     ProcQueue_ = ProcQueue &
     Current_ = Current &
     RemTicks_ is RemTicks - 1 & dec(RemTicks_, int).
 
+dec_p_type(timeout(t_proc_queue, process, t_tick, t_proc_queue, process, t_tick)).
 timeout(ProcQueue, Current, RemTicks, ProcQueue_, Current_, RemTicks_) :-
     ProcQueue neq {} &
     RemTicks = 0 &
-    Current neq nullp &
-    dom(ProcQueue, Dom) & set(Dom) & smax(Dom, Max) & 
+    Current neq process:nullp &
+    dec(Dom, set(int)) & dom(ProcQueue, Dom) & 
+    dec(Max, int) & smax(Dom, Max) & 
     Max1 is Max+1 & dec(Max1, int) &
     un(ProcQueue, {[Max1, Current]}, ProcQueue_) &
-    Current_ = nullp &
+    Current_ = process:nullp &
     RemTicks_ = 0.
 
+dec_p_type(timeoutEmptyQueue(t_proc_queue, process, t_tick, t_proc_queue, process, t_tick)).
 timeoutEmptyQueue(ProcQueue, Current, RemTicks, ProcQueue_, Current_, RemTicks_) :-
     ProcQueue = {} &
     RemTicks = 0 &
-    Current neq nullp &
+    Current neq process:nullp &
     ProcQueue_ = {[1, Current]} &
-    Current_ = nullp &
+    Current_ = process:nullp &
     RemTicks_ = 0.
 
+dec_p_type(idle(t_proc_queue, process, t_tick, t_proc_queue, process, t_tick)).
 idle(ProcQueue, Current, RemTicks, ProcQueue_, Current_, RemTicks_) :-
-    Current = nullp &
+    Current = process:nullp &
     ProcQueue = {} &
     ProcQueue_ = ProcQueue &
     Current_ = Current &
     RemTicks_ = RemTicks.
 
+dec_p_type(dispatchProc(t_proc_queue, process, t_tick, t_proc_queue, process, t_tick)).
 dispatchProc(ProcQueue, Current, RemTicks, ProcQueue_, Current_, RemTicks_) :-
-    Current = nullp &
+    Current = process:nullp &
     ProcQueue neq {} &
     RemTicks = 0 &
-    dom(ProcQueue, Dom) & set(Dom) & smin(Dom, Min) &
-    apply(ProcQueue, Min, Head) &
+    dec(Dom, set(int)) & dom(ProcQueue, Dom) & 
+    dec(Min, int) & smin(Dom, Min) &
+    dec(Head, process) & apply(ProcQueue, Min, Head) &
     diff(ProcQueue, {[Min, Head]}, ProcQueue_) &
     Current_ = Head &
     quantum(RemTicks_).
@@ -145,12 +156,14 @@ dispatch(ProcQueue, Current, RemTicks, ProcQueue_, Current_, RemTicks_) :-
     dispatchProc(ProcQueue, Current, RemTicks, ProcQueue_, Current_, RemTicks_).
 
 %%% terminateProc %%%
+dec_p_type(terminateProcOk(t_proc_queue, process, process, t_proc_queue, process, t_tick)).
 terminateProcOk(ProcQueue, Current, Proc, ProcQueue_, Current_, RemTicks_) :-
     Current = Proc &
     ProcQueue_ = ProcQueue &
-    Current_ = nullp &
+    Current_ = process:nullp &
     RemTicks_ = 0.
 
+dec_p_type(terminateProcError(t_proc_queue, process, t_tick, process, t_proc_queue, process, t_tick)).
 terminateProcError(ProcQueue, Current, RemTicks, Proc, ProcQueue_, Current_, RemTicks_) :-
     Current neq Proc & 
     ProcQueue_ = ProcQueue &

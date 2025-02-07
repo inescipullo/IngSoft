@@ -281,8 +281,8 @@ Se traduce la especificación a \textit{\{log\}} (en \textbf{planificador.slog})
     dec([C0, C1, C2, C3, C4, C5, C6, C7, C8, C9], process)                &
     dec([RT0, RT1, RT2, RT3, RT4, RT5, RT6, RT7, RT8, RT9], t_tick)       &
     initDispatcher(PQ0, C0, RT0)                                          & 
-    newProcess(PQ0, C0, RT0, p1, PQ1, C1, RT1)                            & 
-    newProcess(PQ1, C1, RT1, p2, PQ2, C2, RT2)                            & 
+    newProcess(PQ0, C0, RT0, process:p1, PQ1, C1, RT1)                    & 
+    newProcess(PQ1, C1, RT1, process:p2, PQ2, C2, RT2)                    & 
     dispatch(PQ2, C2, RT2, PQ3, C3, RT3)                                  & 
     dispatch(PQ3, C3, RT3, PQ4, C4, RT4)                                  & 
     dispatch(PQ4, C4, RT4, PQ5, C5, RT5)                                  & 
@@ -296,50 +296,53 @@ La idea de esta simulación es encolar dos nuevos procesos, \textbf{p1} y \textb
 
 \begin{verbatim}
     PQ0 = {},  
-    C0 = nullp,  
+    PQ1 = {[1,process:p1]},  
+    PQ2 = {[1,process:p1],[2,process:p2]},  
+    PQ3 = {[2,process:p2]/_N1},  
+    PQ4 = {[2,process:p2]/_N1},  
+    PQ5 = {[2,process:p2]/_N1},  
+    PQ6 = {[2,process:p2]/_N1},  
+    PQ7 = {[2,process:p2]/_N1},  
+    PQ8 = {[2,process:p2]/_N1},  
+    PQ9 = {[3,process:p1],[2,process:p2]/_N1},  
+    C0 = process:nullp,  
+    C1 = process:nullp,  
+    C2 = process:nullp,  
+    C3 = process:p1,  
+    C4 = process:p1,  
+    C5 = process:p1,  
+    C6 = process:p1,  
+    C7 = process:p1,  
+    C8 = process:p1,  
+    C9 = process:nullp,  
     RT0 = 0,  
-    PQ1 = {[1,p1]},  
-    C1 = nullp,  
     RT1 = 0,  
-    PQ2 = {[1,p1],[2,p2]},  
-    C2 = nullp,  
     RT2 = 0,  
-    PQ3 = {[2,p2]/_N1},  
-    C3 = p1,  
     RT3 = 5,  
-    PQ4 = {[2,p2]/_N1},  
-    C4 = p1,  
     RT4 = 4,  
-    PQ5 = {[2,p2]/_N1},  
-    C5 = p1,  
     RT5 = 3,  
-    PQ6 = {[2,p2]/_N1},  
-    C6 = p1,  
     RT6 = 2,  
-    PQ7 = {[2,p2]/_N1},  
-    C7 = p1,  
     RT7 = 1,  
-    PQ8 = {[2,p2]/_N1},  
-    C8 = p1,  
     RT8 = 0,  
-    PQ9 = {[3,p1],[2,p2]/_N1},  
-    C9 = nullp,  
     RT9 = 0
-    Constraint: subset(_N1,{[1,p1],[2,p2]}), [1,p1]nin _N1, 
-    set(_N1), dom(_N1,_N2), set(_N2), foreach(_X in _N2,2>=_X), 
-    rel(_N1)
+    Constraint: subset(_N1,{[1,process:p1],[2,process:p2]}), 
+    [1,process:p1]nin _N1, set(_N1), dom(_N1,_N2), set(_N2), 
+    foreach(_X in _N2,2>=_X), rel(_N1)
 \end{verbatim}
 
 
 \subsection*{2da simulación}
 
 \begin{verbatim}
-    initDispatcher(PQ0, C0, RT0)                  & 
-    newProcess(PQ0, C0, RT0, p1, PQ1, C1, RT1)    & 
-    newProcess(PQ1, C1, RT1, p2, PQ2, C2, RT2)    & 
-    dispatch(PQ2, C2, RT2, PQ3, C3, RT3)          & 
-    dispatch(PQ3, C3, RT3, PQ4, C4, RT4)          & 
-    terminateProc(PQ4, C4, RT4, p1, PQ5, C5, RT5) & 
+    dec([PQ0, PQ1, PQ2, PQ3, PQ4, PQ5, PQ6], t_proc_queue) &
+    dec([C0, C1, C2, C3, C4, C5, C6], process)             &
+    dec([RT0, RT1, RT2, RT3, RT4, RT5, RT6], t_tick)       &
+    initDispatcher(PQ0, C0, RT0)                           & 
+    newProcess(PQ0, C0, RT0, process:p1, PQ1, C1, RT1)     & 
+    newProcess(PQ1, C1, RT1, process:p2, PQ2, C2, RT2)     & 
+    dispatch(PQ2, C2, RT2, PQ3, C3, RT3)                   & 
+    dispatch(PQ3, C3, RT3, PQ4, C4, RT4)                   & 
+    terminateProc(PQ4, C4, RT4, process:p1, PQ5, C5, RT5)  & 
     dispatch(PQ5, C5, RT5, PQ6, C6, RT6). 
 \end{verbatim}
 
@@ -347,29 +350,30 @@ La idea de esta simulación es encolar dos nuevos procesos, \textbf{p1} y \textb
 
 \begin{verbatim}
     PQ0 = {},  
-    C0 = nullp,  
+    PQ1 = {[1,process:p1]},  
+    PQ2 = {[1,process:p1],[2,process:p2]},  
+    PQ3 = {[2,process:p2]/_N1},  
+    PQ4 = {[2,process:p2]/_N1},  
+    PQ5 = {[2,process:p2]/_N1},  
+    C0 = process:nullp,  
+    C1 = process:nullp,  
+    C2 = process:nullp,  
+    C3 = process:p1,  
+    C4 = process:p1,  
+    C5 = process:nullp,  
+    C6 = process:p2,  
     RT0 = 0,  
-    PQ1 = {[1,p1]},  
-    C1 = nullp,  
     RT1 = 0,  
-    PQ2 = {[1,p1],[2,p2]},  
-    C2 = nullp,  
     RT2 = 0,  
-    PQ3 = {[2,p2]/_N1},  
-    C3 = p1,  
     RT3 = 5,  
-    PQ4 = {[2,p2]/_N1},  
-    C4 = p1,  
     RT4 = 4,  
-    PQ5 = {[2,p2]/_N1},  
-    C5 = nullp,  
     RT5 = 0,  
-    C6 = p2,  
     RT6 = 5
-    Constraint: subset(_N1,{[1,p1],[2,p2]}), [1,p1]nin _N1, 
-    set(_N1), dom(_N1,_N2), set(_N2), foreach(_X in _N2,2=<_X), 
-    pfun(_N1), comppf({[2,2]},_N1,{}), subset(PQ6,{[2,p2]/_N1}), 
-    subset(_N1,{[2,p2]/PQ6}), [2,p2]nin PQ6, rel(_N1), set(PQ6)
+    Constraint: subset(_N1,{[1,process:p1],[2,process:p2]}), 
+    [1,process:p1]nin _N1, set(_N1), dom(_N1,_N2), set(_N2), 
+    foreach(_X in _N2,2=<_X), pfun(_N1), comppf({[2,2]},_N1,{}), 
+    subset(PQ6,{[2,process:p2]/_N1}), subset(_N1,{[2,process:p2]/PQ6}), 
+    [2,process:p2]nin PQ6, rel(_N1), set(PQ6)
 \end{verbatim}
 
 
@@ -379,14 +383,14 @@ Se utiliza el VCG para generar condiciones de verificación sobre la especificac
 
 \subsection*{Sobre la interacción con el VCG}
 
-En una primera iteración del comando \verb|check_vcs_planificador|, hubo algunas condiciones de verificación que no fueron descargadas exitosamente. Por lo que fue necesario agregar las siguientes hipótesis en las condición de verificación que lo requerían:
+En una primera iteración del comando \verb|check_vcs_planificador|, hubo algunas condiciones de verificación que no fueron descargadas exitosamente. Por lo que fue necesario agregar las siguientes hipótesis en las condiciones de verificación que lo requerían:
 
 \begin{itemize}
     \item hipótesis \verb|invDispatcher(ProcQueue, Current)| en \verb|dispatch_pi_invIny|
     \item hipótesis \verb|invIny(ProcQueue)| en \verb|dispatch_pi_invDispatcher|
 \end{itemize}
 
-En ambos casos plantee la negación del enunciado y analicé el contraejemplos que presentaba para saber que hipótesis era necesario agregar. No fue necesario utilizar el comando \verb|findh|.
+En ambos casos plantee la negación del enunciado y analicé el contraejemplo que presentaba para saber qué hipótesis era necesario agregar. No fue necesario utilizar el comando \verb|findh|.
 
 También fue necesario aumentar el timeout para que se logren descargar algunas pruebas, esto lo hice modificando el argumento de \verb|def_to|.
 
@@ -475,8 +479,9 @@ Finalmente se generan los casos de prueba, obteniendo el siguiente árbol de cla
 
 Notamos que no se generó un caso de prueba para la hoja \verb|NewProcess_SP_1|. Esto es porque es una clase de prueba vacía, ya que contiene tanto $procQueue \neq \{\}$ y $procQueue = \{\}$ como precondiciones.
 
-Por último, se muestran los esquemas de los casos de prueba abstractos generados por \textsc{Fastest}.
+\subsection*{Esquemas Z}
 
+Por último, se muestran los esquemas de los casos de prueba abstractos generados por \textsc{Fastest}.
 
 \begin{schema}{NewProcess\_ VIS}\\
 procQueue : \nat \pinj PROCESS \\
