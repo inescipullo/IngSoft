@@ -277,103 +277,103 @@ Se traduce la especificación a \textit{\{log\}} (en \textbf{planificador.slog})
 \subsection*{1ra simulación}
 
 \begin{verbatim}
-    dec([PQ0, PQ1, PQ2, PQ3, PQ4, PQ5, PQ6, PQ7, PQ8, PQ9], t_proc_queue) &
-    dec([C0, C1, C2, C3, C4, C5, C6, C7, C8, C9], process)                &
-    dec([RT0, RT1, RT2, RT3, RT4, RT5, RT6, RT7, RT8, RT9], t_tick)       &
-    initDispatcher(PQ0, C0, RT0)                                          & 
-    newProcess(PQ0, C0, RT0, process:p1, PQ1, C1, RT1)                    & 
-    newProcess(PQ1, C1, RT1, process:p2, PQ2, C2, RT2)                    & 
-    dispatch(PQ2, C2, RT2, PQ3, C3, RT3)                                  & 
-    dispatch(PQ3, C3, RT3, PQ4, C4, RT4)                                  & 
-    dispatch(PQ4, C4, RT4, PQ5, C5, RT5)                                  & 
-    dispatch(PQ5, C5, RT5, PQ6, C6, RT6)                                  & 
-    dispatch(PQ6, C6, RT6, PQ7, C7, RT7)                                  & 
-    dispatch(PQ7, C7, RT7, PQ8, C8, RT8)                                  & 
-    dispatch(PQ8, C8, RT8, PQ9, C9, RT9).
+dec([PQ0, PQ1, PQ2, PQ3, PQ4, PQ5, PQ6, PQ7, PQ8, PQ9], t_proc_queue) &
+dec([C0, C1, C2, C3, C4, C5, C6, C7, C8, C9], process)                &
+dec([RT0, RT1, RT2, RT3, RT4, RT5, RT6, RT7, RT8, RT9], t_tick)       &
+initDispatcher(PQ0, C0, RT0)                                          & 
+newProcess(PQ0, C0, RT0, process:p1, PQ1, C1, RT1)                    & 
+newProcess(PQ1, C1, RT1, process:p2, PQ2, C2, RT2)                    & 
+dispatch(PQ2, C2, RT2, PQ3, C3, RT3)                                  & 
+dispatch(PQ3, C3, RT3, PQ4, C4, RT4)                                  & 
+dispatch(PQ4, C4, RT4, PQ5, C5, RT5)                                  & 
+dispatch(PQ5, C5, RT5, PQ6, C6, RT6)                                  & 
+dispatch(PQ6, C6, RT6, PQ7, C7, RT7)                                  & 
+dispatch(PQ7, C7, RT7, PQ8, C8, RT8)                                  & 
+dispatch(PQ8, C8, RT8, PQ9, C9, RT9).
 \end{verbatim}
 
 La idea de esta simulación es encolar dos nuevos procesos, \textbf{p1} y \textbf{p2}, en la cola de procesos listos, luego iniciar la ejecución del primero hasta que termine el tiempo de ejecución asignado (1 \textbf{quantum}) y sea interrumpido por el dispatcher. El resultado es el esperado:
 
 \begin{verbatim}
-    PQ0 = {},  
-    PQ1 = {[1,process:p1]},  
-    PQ2 = {[1,process:p1],[2,process:p2]},  
-    PQ3 = {[2,process:p2]/_N1},  
-    PQ4 = {[2,process:p2]/_N1},  
-    PQ5 = {[2,process:p2]/_N1},  
-    PQ6 = {[2,process:p2]/_N1},  
-    PQ7 = {[2,process:p2]/_N1},  
-    PQ8 = {[2,process:p2]/_N1},  
-    PQ9 = {[3,process:p1],[2,process:p2]/_N1},  
-    C0 = process:nullp,  
-    C1 = process:nullp,  
-    C2 = process:nullp,  
-    C3 = process:p1,  
-    C4 = process:p1,  
-    C5 = process:p1,  
-    C6 = process:p1,  
-    C7 = process:p1,  
-    C8 = process:p1,  
-    C9 = process:nullp,  
-    RT0 = 0,  
-    RT1 = 0,  
-    RT2 = 0,  
-    RT3 = 5,  
-    RT4 = 4,  
-    RT5 = 3,  
-    RT6 = 2,  
-    RT7 = 1,  
-    RT8 = 0,  
-    RT9 = 0
-    Constraint: subset(_N1,{[1,process:p1],[2,process:p2]}), 
-    [1,process:p1]nin _N1, set(_N1), dom(_N1,_N2), set(_N2), 
-    foreach(_X in _N2,2>=_X), rel(_N1)
+PQ0 = {},  
+PQ1 = {[1,process:p1]},  
+PQ2 = {[1,process:p1],[2,process:p2]},  
+PQ3 = {[2,process:p2]/_N1},  
+PQ4 = {[2,process:p2]/_N1},  
+PQ5 = {[2,process:p2]/_N1},  
+PQ6 = {[2,process:p2]/_N1},  
+PQ7 = {[2,process:p2]/_N1},  
+PQ8 = {[2,process:p2]/_N1},  
+PQ9 = {[3,process:p1],[2,process:p2]/_N1},  
+C0 = process:nullp,  
+C1 = process:nullp,  
+C2 = process:nullp,  
+C3 = process:p1,  
+C4 = process:p1,  
+C5 = process:p1,  
+C6 = process:p1,  
+C7 = process:p1,  
+C8 = process:p1,  
+C9 = process:nullp,  
+RT0 = 0,  
+RT1 = 0,  
+RT2 = 0,  
+RT3 = 5,  
+RT4 = 4,  
+RT5 = 3,  
+RT6 = 2,  
+RT7 = 1,  
+RT8 = 0,  
+RT9 = 0
+Constraint: subset(_N1,{[1,process:p1],[2,process:p2]}), 
+[1,process:p1]nin _N1, set(_N1), dom(_N1,_N2), set(_N2), 
+foreach(_X in _N2,2>=_X), rel(_N1)
 \end{verbatim}
 
 
 \subsection*{2da simulación}
 
 \begin{verbatim}
-    dec([PQ0, PQ1, PQ2, PQ3, PQ4, PQ5, PQ6], t_proc_queue) &
-    dec([C0, C1, C2, C3, C4, C5, C6], process)             &
-    dec([RT0, RT1, RT2, RT3, RT4, RT5, RT6], t_tick)       &
-    initDispatcher(PQ0, C0, RT0)                           & 
-    newProcess(PQ0, C0, RT0, process:p1, PQ1, C1, RT1)     & 
-    newProcess(PQ1, C1, RT1, process:p2, PQ2, C2, RT2)     & 
-    dispatch(PQ2, C2, RT2, PQ3, C3, RT3)                   & 
-    dispatch(PQ3, C3, RT3, PQ4, C4, RT4)                   & 
-    terminateProc(PQ4, C4, RT4, process:p1, PQ5, C5, RT5)  & 
-    dispatch(PQ5, C5, RT5, PQ6, C6, RT6). 
+dec([PQ0, PQ1, PQ2, PQ3, PQ4, PQ5, PQ6], t_proc_queue) &
+dec([C0, C1, C2, C3, C4, C5, C6], process)             &
+dec([RT0, RT1, RT2, RT3, RT4, RT5, RT6], t_tick)       &
+initDispatcher(PQ0, C0, RT0)                           & 
+newProcess(PQ0, C0, RT0, process:p1, PQ1, C1, RT1)     & 
+newProcess(PQ1, C1, RT1, process:p2, PQ2, C2, RT2)     & 
+dispatch(PQ2, C2, RT2, PQ3, C3, RT3)                   & 
+dispatch(PQ3, C3, RT3, PQ4, C4, RT4)                   & 
+terminateProc(PQ4, C4, RT4, process:p1, PQ5, C5, RT5)  & 
+dispatch(PQ5, C5, RT5, PQ6, C6, RT6). 
 \end{verbatim}
 
 La idea de esta simulación es encolar dos nuevos procesos, \textbf{p1} y \textbf{p2}, en la cola de procesos listos, luego iniciar la ejecución del primero, que ejecute por un tick y que termine su ejecución. Despues se inicia la ejecución del segundo. El resultado es el esperado:
 
 \begin{verbatim}
-    PQ0 = {},  
-    PQ1 = {[1,process:p1]},  
-    PQ2 = {[1,process:p1],[2,process:p2]},  
-    PQ3 = {[2,process:p2]/_N1},  
-    PQ4 = {[2,process:p2]/_N1},  
-    PQ5 = {[2,process:p2]/_N1},  
-    C0 = process:nullp,  
-    C1 = process:nullp,  
-    C2 = process:nullp,  
-    C3 = process:p1,  
-    C4 = process:p1,  
-    C5 = process:nullp,  
-    C6 = process:p2,  
-    RT0 = 0,  
-    RT1 = 0,  
-    RT2 = 0,  
-    RT3 = 5,  
-    RT4 = 4,  
-    RT5 = 0,  
-    RT6 = 5
-    Constraint: subset(_N1,{[1,process:p1],[2,process:p2]}), 
-    [1,process:p1]nin _N1, set(_N1), dom(_N1,_N2), set(_N2), 
-    foreach(_X in _N2,2=<_X), pfun(_N1), comppf({[2,2]},_N1,{}), 
-    subset(PQ6,{[2,process:p2]/_N1}), subset(_N1,{[2,process:p2]/PQ6}), 
-    [2,process:p2]nin PQ6, rel(_N1), set(PQ6)
+PQ0 = {},  
+PQ1 = {[1,process:p1]},  
+PQ2 = {[1,process:p1],[2,process:p2]},  
+PQ3 = {[2,process:p2]/_N1},  
+PQ4 = {[2,process:p2]/_N1},  
+PQ5 = {[2,process:p2]/_N1},  
+C0 = process:nullp,  
+C1 = process:nullp,  
+C2 = process:nullp,  
+C3 = process:p1,  
+C4 = process:p1,  
+C5 = process:nullp,  
+C6 = process:p2,  
+RT0 = 0,  
+RT1 = 0,  
+RT2 = 0,  
+RT3 = 5,  
+RT4 = 4,  
+RT5 = 0,  
+RT6 = 5
+Constraint: subset(_N1,{[1,process:p1],[2,process:p2]}), 
+[1,process:p1]nin _N1, set(_N1), dom(_N1,_N2), set(_N2), 
+foreach(_X in _N2,2=<_X), pfun(_N1), comppf({[2,2]},_N1,{}), 
+subset(PQ6,{[2,process:p2]/_N1}), subset(_N1,{[2,process:p2]/PQ6}), 
+[2,process:p2]nin PQ6, rel(_N1), set(PQ6)
 \end{verbatim}
 
 
