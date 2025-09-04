@@ -9,6 +9,8 @@ https://www.fceia.unr.edu.ar/asist/index.html
 ### Ingeniería de Software II
 https://www.fceia.unr.edu.ar/ingsoft/
 
+>[!CAUTION]
+> DISCLAIMER: Esta es una versión anterior del TP de Ingeniería de Software, realizada en Febrero 2025 de acuerdo al enunciado de ese momento.
 
 # Comandos Utilizados
 
