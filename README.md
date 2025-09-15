@@ -10,13 +10,14 @@ https://www.fceia.unr.edu.ar/asist/index.html
 https://www.fceia.unr.edu.ar/ingsoft/
 
 
-# Comandos Utilizados
+# Comandos de {log} Utilizados
 
-## {log}
+>[!NOTE]
+> {log} Version 4.9.9 Release 1d
+> 
+> SWI-Prolog version 9.3.29 for x86_64-linux
 
-{log} Version 4.9.8 Release 15h
-
-SWI-Prolog version 9.2.9 for x86_64-linux
+### Para verificar que el programa este correctamente tipado (pasa el _typechecker_):
 
 ```
 $ swipl
@@ -24,52 +25,67 @@ $ swipl
 ?- setlog.
 {log}=> type_check.
 {log}=> consult('planificador.slog').
-<!-- ***SIMULACIONES*** -->
+```
+
+### Para ejecutar las simulaciones en el entorno NEXT:
+
+```
+$ swipl
+?- consult('setlog').
+?- setlog.
+{log}=> consult('planificador.slog').
+{log}=> vcg('planificador.slog').
+{log}=> consult('planificador-vc.slog').
+{log}=> setpp(quantum).
+```
+
+Y luego ejecutar las simulaciones.
+Lo de `setpp(quantum).` es porque para que la ejecución de simulaciones dentro del entorno NEXT funcione hay que darle explicitamente la definición de los parametros (ver en manual de {log}).
+No pareció ser necesario descargar exitosamente las condiciones de verificación.
+
+### Para generar casos de prueba y descargarlos (VCG):
+
+```
+$ swipl
+?- consult('setlog').
+?- setlog.
+{log}=> consult('planificador.slog').
 {log}=> vcg('planificador.slog').
 {log}=> consult('planificador-vc.slog').
 {log}=> check_vcs_planificador.
 ```
 
-## Z/Eves
+Antes de `consult('planificador-vc.slog').`, hacer cambios en el archivo `planificador-vc.slog` de ser necesario, para que todos los casos de prueba se descarguen exitosamente.
 
-Está en el labdcc, no vale la pena intentar descargarlo :)
-
-```
-$ z-eves
-=> read "zEves.tex";
-=> try InvDispatcher \land TerminateProcess \implies InvDispatcher';
-=> invoke TerminateProcess;
-=> split TerminateProcessOk;
-=> simplify;
-=> cases;
-=> invoke TerminateProcessOk;
-=> invoke InvDispatcher;
-=> equality substitute procQueue';
-=> simplify;
-=> next;
-=> invoke TerminateProcessError;
-=> invoke InvDispatcher;
-=> invoke \Xi Dispatcher;
-=> rewrite;
-=> next;
-```
-
-## Fastest
-
-Fastest Version 1.7
+### Para generar casos de prueba usando {log}-TTF:
 
 ```
-$ java -jar fastest.jar
-Fastest> loadspec ../fastest.tex 
-Fastest> selop NewProcess
-Fastest> genalltt
-Fastest> showtt
-Fastest> addtactic NewProcess_DNF_1 SP \notin p? \notin \ran procQueue
-Fastest> addtactic NewProcess_DNF_3 SP \in p? \in \ran procQueue
-Fastest> genalltt
-Fastest> showtt -o arboltt.tex
-Fastest> showsch -tcl -o esquemastcl.tex
-Fastest> genalltca
-Fastest> showtt -o arboltca.tex
-Fastest> showsch -tca -o esquemastca.tex
+$ swipl
+?- consult('setlog').
+?- setlog.
+{log}=> type_check.
+{log}=> consult('planificador.slog').
+{log}=> consult('planificador-vc.slog').
+{log}=> check_vcs_planificador.
+{log}=> ttf(planificador).
 ```
+
+Y despues los comandos para generar los casos de prueba de cada operación.
+
+```
+{log}=> applydnf(newProcess(NewProc)).
+{log}=> writett.
+{log}=> applysp(newProcess_dnf_1,un(ProcQueue, {[Max1, NewProc]}, ProcQueue_)).
+{log}=> prunett.
+{log}=> writett.
+{log}=> gentc.
+{log}=> writett.
+{log}=> writetc.
+{log}=> exporttt.
+```
+
+applydnf(dispatch).
+applysp(dispatch_dnf_2,un(ProcQueue, {[Max1, Current]}, ProcQueue_)).
+applyii(dispatch_vis,RemTicks,[0,5]).
+
+applydnf(terminateProc(Proc)).

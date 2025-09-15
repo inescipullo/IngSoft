@@ -29,7 +29,7 @@
                    \setlength{\rightmargin}{\leftmargin}}}
   {\end{list}\end{leftbar}}
 
-\newcommand{\setlog}{$\{log\}$\xspace}
+\newcommand{\setlog}{\{\textit{log}\}\xspace}
 
 
 \usepackage{mathtools}
@@ -269,117 +269,175 @@ Procedemos con la especificación de las operaciones requeridas. Estas son:
 \end{zed}
 
 
-\section{Simulaciones en \textit{\{log\}}}
+\section{Simulaciones en \setlog usando el entorno \textsc{Next}}
 
-Se traduce la especificación a \textit{\{log\}} (en \textbf{planificador.slog}), la cual pasa el \textbf{type\_check}. A continuación, se presentan dos simulaciones ejecutadas sobre \textit{\{log\}} y la primera solución de cada una.
+Se traduce la especificación a \setlog (en \textbf{planificador.slog}), la cual está correctamente tipada, es decir, pasa el \textbf{type\_check}. A continuación, se presentan dos simulaciones ejecutadas sobre el prototipo \setlog usando el entorno \textsc{Next} y la traza de ejecución de cada una.
 
 
 \subsection*{1ra simulación}
 
 \begin{verbatim}
-dec([PQ0, PQ1, PQ2, PQ3, PQ4, PQ5, PQ6, PQ7, PQ8, PQ9], t_proc_queue) &
-dec([C0, C1, C2, C3, C4, C5, C6, C7, C8, C9], process)                &
-dec([RT0, RT1, RT2, RT3, RT4, RT5, RT6, RT7, RT8, RT9], t_tick)       &
-initDispatcher(PQ0, C0, RT0)                                          & 
-newProcess(PQ0, C0, RT0, process:p1, PQ1, C1, RT1)                    & 
-newProcess(PQ1, C1, RT1, process:p2, PQ2, C2, RT2)                    & 
-dispatch(PQ2, C2, RT2, PQ3, C3, RT3)                                  & 
-dispatch(PQ3, C3, RT3, PQ4, C4, RT4)                                  & 
-dispatch(PQ4, C4, RT4, PQ5, C5, RT5)                                  & 
-dispatch(PQ5, C5, RT5, PQ6, C6, RT6)                                  & 
-dispatch(PQ6, C6, RT6, PQ7, C7, RT7)                                  & 
-dispatch(PQ7, C7, RT7, PQ8, C8, RT8)                                  & 
-dispatch(PQ8, C8, RT8, PQ9, C9, RT9).
+[initial]:[invPFun,invIny,invNat,invDispatcher] >>
+newProcess(NewProc:[[p1,p2,p3]]) >> 
+3:dispatch >>
+terminateProc(Proc:p1) >>
+8:dispatch.
 \end{verbatim}
-
-La idea de esta simulación es encolar dos nuevos procesos, \textbf{p1} y \textbf{p2}, en la cola de procesos listos, luego iniciar la ejecución del primero hasta que termine el tiempo de ejecución asignado (1 \textbf{quantum}) y sea interrumpido por el dispatcher. El resultado es el esperado:
 
 \begin{verbatim}
-PQ0 = {},  
-PQ1 = {[1,process:p1]},  
-PQ2 = {[1,process:p1],[2,process:p2]},  
-PQ3 = {[2,process:p2]/_N1},  
-PQ4 = {[2,process:p2]/_N1},  
-PQ5 = {[2,process:p2]/_N1},  
-PQ6 = {[2,process:p2]/_N1},  
-PQ7 = {[2,process:p2]/_N1},  
-PQ8 = {[2,process:p2]/_N1},  
-PQ9 = {[3,process:p1],[2,process:p2]/_N1},  
-C0 = process:nullp,  
-C1 = process:nullp,  
-C2 = process:nullp,  
-C3 = process:p1,  
-C4 = process:p1,  
-C5 = process:p1,  
-C6 = process:p1,  
-C7 = process:p1,  
-C8 = process:p1,  
-C9 = process:nullp,  
-RT0 = 0,  
-RT1 = 0,  
-RT2 = 0,  
-RT3 = 5,  
-RT4 = 4,  
-RT5 = 3,  
-RT6 = 2,  
-RT7 = 1,  
-RT8 = 0,  
-RT9 = 0
-Constraint: subset(_N1,{[1,process:p1],[2,process:p2]}), 
-[1,process:p1]nin _N1, set(_N1), dom(_N1,_N2), set(_N2), 
-foreach(_X in _N2,2>=_X), rel(_N1)
+Parameters:
+Quantum = 5
+
+Execution trace is:
+ProcQueue = {},  
+Current = process:nullp,  
+RemTicks = 0
+    ----> newProcess(NewProc:p1)
+ProcQueue = {[1,p1]},  
+Current = process:nullp,  
+RemTicks = 0
+    ----> newProcess(NewProc:p2)
+ProcQueue = {[1,p1],[2,p2]},  
+Current = process:nullp,  
+RemTicks = 0
+    ----> newProcess(NewProc:p3)
+ProcQueue = {[1,p1],[2,p2],[3,p3]},  
+Current = process:nullp,  
+RemTicks = 0
+    ----> dispatch
+ProcQueue = {[2,p2],[3,p3]},  
+Current = p1,  
+RemTicks = 5
+    ----> dispatch
+ProcQueue = {[2,p2],[3,p3]},  
+Current = p1,  
+RemTicks = 4
+    ----> dispatch
+ProcQueue = {[2,p2],[3,p3]},  
+Current = p1,  
+RemTicks = 3
+    ----> terminateProc(Proc:p1)
+ProcQueue = {[2,p2],[3,p3]},  
+Current = process:nullp,  
+RemTicks = 0
+    ----> dispatch
+ProcQueue = {[3,p3]},  
+Current = p2,  
+RemTicks = 5
+    ----> dispatch
+ProcQueue = {[3,p3]},  
+Current = p2,  
+RemTicks = 4
+    ----> dispatch
+ProcQueue = {[3,p3]},  
+Current = p2,  
+RemTicks = 3
+    ----> dispatch
+ProcQueue = {[3,p3]},  
+Current = p2,  
+RemTicks = 2
+    ----> dispatch
+ProcQueue = {[3,p3]},  
+Current = p2,  
+RemTicks = 1
+    ----> dispatch
+ProcQueue = {[3,p3]},  
+Current = p2,  
+RemTicks = 0
+    ----> dispatch
+ProcQueue = {[3,p3],[4,p2]},  
+Current = process:nullp,  
+RemTicks = 0
+    ----> dispatch
+ProcQueue = {[4,p2]},  
+Current = p3,  
+RemTicks = 5
+
+true
 \end{verbatim}
 
+En esta simulación se encolan tres nuevos procesos, \textbf{p1}, \textbf{p2} y \textbf{p3}, en la cola de procesos listos y se inicia la ejecución del primero, la cual es interrumpida por la señal \textbf{terminateProc}. El planificador continúa con la ejecución del segundo proceso hasta que termina el tiempo de ejecución asignado (1 \textbf{quantum}) y es interrumpido por el dispatcher, para luego seguir con la ejecución del proximo proceso en la cola, \textbf{p3}.
+
+Notamos como se verifican todos los invariantes durante la ejecución de la simulación.
 
 \subsection*{2da simulación}
 
 \begin{verbatim}
-dec([PQ0, PQ1, PQ2, PQ3, PQ4, PQ5, PQ6], t_proc_queue) &
-dec([C0, C1, C2, C3, C4, C5, C6], process)             &
-dec([RT0, RT1, RT2, RT3, RT4, RT5, RT6], t_tick)       &
-initDispatcher(PQ0, C0, RT0)                           & 
-newProcess(PQ0, C0, RT0, process:p1, PQ1, C1, RT1)     & 
-newProcess(PQ1, C1, RT1, process:p2, PQ2, C2, RT2)     & 
-dispatch(PQ2, C2, RT2, PQ3, C3, RT3)                   & 
-dispatch(PQ3, C3, RT3, PQ4, C4, RT4)                   & 
-terminateProc(PQ4, C4, RT4, process:p1, PQ5, C5, RT5)  & 
-dispatch(PQ5, C5, RT5, PQ6, C6, RT6). 
+[initial]:[invPFun,invIny,invNat,invDispatcher] >>
+dispatch >>
+newProcess(NewProc:[[p1,p1,process:nullp]]) >> 
+2:dispatch >>
+terminateProc(Proc:p2) >>
+5:dispatch.
 \end{verbatim}
-
-La idea de esta simulación es encolar dos nuevos procesos, \textbf{p1} y \textbf{p2}, en la cola de procesos listos, luego iniciar la ejecución del primero, que ejecute por un tick y que termine su ejecución. Despues se inicia la ejecución del segundo. El resultado es el esperado:
 
 \begin{verbatim}
-PQ0 = {},  
-PQ1 = {[1,process:p1]},  
-PQ2 = {[1,process:p1],[2,process:p2]},  
-PQ3 = {[2,process:p2]/_N1},  
-PQ4 = {[2,process:p2]/_N1},  
-PQ5 = {[2,process:p2]/_N1},  
-C0 = process:nullp,  
-C1 = process:nullp,  
-C2 = process:nullp,  
-C3 = process:p1,  
-C4 = process:p1,  
-C5 = process:nullp,  
-C6 = process:p2,  
-RT0 = 0,  
-RT1 = 0,  
-RT2 = 0,  
-RT3 = 5,  
-RT4 = 4,  
-RT5 = 0,  
-RT6 = 5
-Constraint: subset(_N1,{[1,process:p1],[2,process:p2]}), 
-[1,process:p1]nin _N1, set(_N1), dom(_N1,_N2), set(_N2), 
-foreach(_X in _N2,2=<_X), pfun(_N1), comppf({[2,2]},_N1,{}), 
-subset(PQ6,{[2,process:p2]/_N1}), subset(_N1,{[2,process:p2]/PQ6}), 
-[2,process:p2]nin PQ6, rel(_N1), set(PQ6)
+Parameters:
+Quantum = 5
+
+Execution trace is:
+ProcQueue = {},  
+Current = process:nullp,  
+RemTicks = 0
+    ----> dispatch
+ProcQueue = {},  
+Current = process:nullp,  
+RemTicks = 0
+    ----> newProcess(NewProc:p1)
+ProcQueue = {[1,p1]},  
+Current = process:nullp,  
+RemTicks = 0
+    ----> newProcess(NewProc:p1)
+ProcQueue = {[1,p1]},  
+Current = process:nullp,  
+RemTicks = 0
+    ----> newProcess(NewProc:process:nullp)
+ProcQueue = {[1,p1]},  
+Current = process:nullp,  
+RemTicks = 0
+    ----> dispatch
+ProcQueue = {},  
+Current = p1,  
+RemTicks = 5
+    ----> dispatch
+ProcQueue = {},  
+Current = p1,  
+RemTicks = 4
+    ----> terminateProc(Proc:p2)
+ProcQueue = {},  
+Current = p1,  
+RemTicks = 4
+    ----> dispatch
+ProcQueue = {},  
+Current = p1,  
+RemTicks = 3
+    ----> dispatch
+ProcQueue = {},  
+Current = p1,  
+RemTicks = 2
+    ----> dispatch
+ProcQueue = {},  
+Current = p1,  
+RemTicks = 1
+    ----> dispatch
+ProcQueue = {},  
+Current = p1,  
+RemTicks = 0
+    ----> dispatch
+ProcQueue = {[1,p1]},  
+Current = process:nullp,  
+RemTicks = 0
+
+true
 \end{verbatim}
 
+La idea de esta simulación es comprobar el correcto funcionamiento de las operaciones en los casos de error o casos de ejecución borde. Por ejemplo la ejecución de las operaciones \textbf{idle}, \textbf{newProcessError}, \textbf{timeoutEmptyQueue} y \textbf{terminateProcError}.
+
+Notamos como se verifican todos los invariantes durante la ejecución de la simulación.
 
 \section{Generado de Condiciones de Verificación}
 
-Se utiliza el VCG para generar condiciones de verificación sobre la especificación en \textit{\{log\}}, lo cual genera el archivo \textbf{planificador-vc.slog}. Luego el comando \verb|check_vcs_planificador| realiza todas las descargas de prueba automaticamente.
+Se utiliza el VCG para generar condiciones de verificación sobre la especificación en \setlog, lo cual genera el archivo \textbf{planificador-vc.slog}. Luego el comando \verb|check_vcs_planificador| realiza todas las descargas de prueba automaticamente.
 
 \subsection*{Sobre la interacción con el VCG}
 
@@ -390,38 +448,13 @@ En una primera iteración del comando \verb|check_vcs_planificador|, hubo alguna
     \item hipótesis \verb|invIny(ProcQueue)| en \verb|dispatch_pi_invDispatcher|
 \end{itemize}
 
-En ambos casos plantee la negación del enunciado y analicé el contraejemplo que presentaba para saber qué hipótesis era necesario agregar. No fue necesario utilizar el comando \verb|findh|.
+En ambos casos plantee la negación del enunciado y analicé el contraejemplo que presentaba para saber qué hipótesis era necesario agregar. No utilicé los comandos \verb|vcgce|, \verb|vcacg| y \verb|findh|.
 
 También fue necesario aumentar el timeout para que se logren descargar algunas pruebas, esto lo hice modificando el argumento de \verb|def_to|.
 
-\section{Demostración en \textit{Z/EVES}}
+\section{Casos de Prueba con \setlog-TTF}
 
-Utilizando el asistente de pruebas \textit{Z/EVES}, vamos a demostrar que la operación \verb|TerminateProcess| preserva el invariante de estado \verb|InvDispatcher|.
-
-\begin{theorem}{TerminateProcessInvDispatcher}
-    InvDispatcher \land TerminateProcess \implies InvDispatcher'
-\end{theorem}
-
-\begin{zproof}[TerminateProcessInvDispatcher]
-    invoke TerminateProcess;
-    split TerminateProcessOk;
-    simplify;
-    cases;
-    invoke TerminateProcessOk;
-    invoke InvDispatcher;
-    equality substitute procQueue';
-    simplify;
-    next;
-    invoke TerminateProcessError;
-    invoke InvDispatcher;
-    invoke \Xi Dispatcher;
-    rewrite;
-    next;
-\end{zproof}
-
-\section{Casos de Prueba con \textsc{Fastest}}
-
-Se generan casos de prubea utilizando la herramienta \textsc{Fastest} para la operación \verb|NewProcess|.
+Se generan casos de prubea utilizando \setlog-TTF para todas las operaciones.
 
 \subsection*{Comandos utilizados}
 
@@ -481,111 +514,7 @@ Notamos que no se generó un caso de prueba para la hoja \verb|NewProcess_SP_1|.
 
 \subsection*{Esquemas Z}
 
-Por último, se muestran los esquemas de los casos de prueba abstractos generados por \textsc{Fastest}.
 
-\begin{schema}{NewProcess\_ VIS}\\
-procQueue : \nat \pinj PROCESS \\
-current : PROCESS \\
-remTicks : TICK \\
-p? : PROCESS 
-\where
-( procQueue \neq \{ \} \\
-p? \notin \ran procQueue \\
-p? \neq current \\
-p? \neq nullp ) \lor ( procQueue = \{ \} \\
-p? \notin \ran procQueue \\
-p? \neq current \\
-p? \neq nullp ) \lor p? \in \ran procQueue \lor p? = current \lor p? = nullp
-\end{schema}
-
-\begin{multicols}{2}
-
-\begin{schema}{NewProcess\_ DNF\_ 1}\\
-NewProcess\_ VIS 
-\where
-procQueue \neq \{ \} \\
-p? \notin \ran procQueue \\
-p? \neq current \\
-p? \neq nullp
-\end{schema}
-
-\begin{schema}{NewProcess\_ SP\_ 1}\\
-NewProcess\_ DNF\_ 1 
-\where
-\ran procQueue = \{ \}
-\end{schema}
-
-\begin{schema}{NewProcess\_ SP\_ 2}\\
-NewProcess\_ DNF\_ 1 
-\where
-\ran procQueue \neq \{ \}
-\end{schema}
-
-\begin{schema}{NewProcess\_ DNF\_ 2}\\
-NewProcess\_ VIS 
-\where
-procQueue = \{ \} \\
-p? \notin \ran procQueue \\
-p? \neq current \\
-p? \neq nullp
-\end{schema}
-
-\begin{schema}{NewProcess\_ DNF\_ 3}\\
-NewProcess\_ VIS 
-\where
-p? \in \ran procQueue
-\end{schema}
-
-\begin{schema}{NewProcess\_ SP\_ 3}\\
-NewProcess\_ DNF\_ 3 
-\where
-\ran procQueue = \{ p? \}
-\end{schema}
-
-\begin{schema}{NewProcess\_ SP\_ 4}\\
-NewProcess\_ DNF\_ 3 
-\where
-\ran procQueue \neq \{ p? \} \\
-p? \in \ran procQueue
-\end{schema}
-
-\begin{schema}{NewProcess\_ DNF\_ 4}\\
-NewProcess\_ VIS 
-\where
-p? = current
-\end{schema}
-
-\begin{schema}{NewProcess\_ DNF\_ 5}\\
-NewProcess\_ VIS 
-\where
-p? = nullp
-\end{schema}
-
-\begin{schema}{NewProcess\_ SP\_ 2\_ TCASE}\\
-NewProcess\_ SP\_ 2
-\end{schema}
-
-\begin{schema}{NewProcess\_ DNF\_ 2\_ TCASE}\\
-NewProcess\_ DNF\_ 2
-\end{schema}
-
-\begin{schema}{NewProcess\_ SP\_ 3\_ TCASE}\\
-NewProcess\_ SP\_ 3
-\end{schema}
-
-\begin{schema}{NewProcess\_ SP\_ 4\_ TCASE}\\
-NewProcess\_ SP\_ 4
-\end{schema}
-
-\begin{schema}{NewProcess\_ DNF\_ 4\_ TCASE}\\
-NewProcess\_ DNF\_ 4
-\end{schema}
-
-\begin{schema}{NewProcess\_ DNF\_ 5\_ TCASE}\\
-NewProcess\_ DNF\_ 5
-\end{schema}
-
-\end{multicols}
 
 \end{document}
 
