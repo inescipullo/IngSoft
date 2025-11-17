@@ -1,0 +1,14 @@
+terminateProc_ts_1(Proc,ProcQueue,Current,RemTicks,Quantum) :-
+  Current=Proc.
+
+terminateProc_tc_1(Proc,ProcQueue,Current,RemTicks,Quantum) :-
+  Current=process:n0 &
+  Proc=process:n0.
+
+terminateProc_ts_2(Proc,ProcQueue,Current,RemTicks,Quantum) :-
+  Current neq Proc.
+
+terminateProc_tc_2(Proc,ProcQueue,Current,RemTicks,Quantum) :-
+  Current=process:n0 &
+  Proc=process:n1.
+

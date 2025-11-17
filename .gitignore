@@ -2,3 +2,15 @@
 ._.DS_Store
 **/.DS_Store
 **/._.DS_Store
+
+## Core latex/pdflatex auxiliary files:
+*.aux
+*.log
+*.fls
+*.out
+
+
+## Build tool auxiliary files:
+*.fdb_latexmk
+*.synctex
+*.synctex.gz

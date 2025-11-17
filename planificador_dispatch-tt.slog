@@ -1,0 +1,84 @@
+dispatch_ts_1(ProcQueue,Current,RemTicks,Quantum) :-
+  Current neq process:nullp &
+  RemTicks>0.
+
+dispatch_tc_1(ProcQueue,Current,RemTicks,Quantum) :-
+  Current=process:n0 &
+  RemTicks=1.
+
+dispatch_ts_24(ProcQueue,Current,RemTicks,Quantum) :-
+  dec(_29074,int) &
+  _29074 is _29000+1 &
+  smax(_29010,_29000) &
+  dec(_29000,int) &
+  dom(ProcQueue,_29010) &
+  dec(_29010,set(int)) &
+  Current neq process:nullp &
+  RemTicks=0 &
+  ProcQueue neq {} &
+  ProcQueue neq {} &
+  {[_29074,Current]}neq{} &
+  disj(ProcQueue,{[_29074,Current]}).
+
+dispatch_tc_24(ProcQueue,Current,RemTicks,Quantum) :-
+  ProcQueue={[-1,process:n1]} &
+  Current=process:n0 &
+  RemTicks=0.
+
+dispatch_ts_3(ProcQueue,Current,RemTicks,Quantum) :-
+  Current neq process:nullp &
+  RemTicks=0 &
+  ProcQueue={}.
+
+dispatch_tc_3(ProcQueue,Current,RemTicks,Quantum) :-
+  Current=process:n0 &
+  RemTicks=0 &
+  ProcQueue={}.
+
+dispatch_ts_4(ProcQueue,Current,RemTicks,Quantum) :-
+  ProcQueue={} &
+  Current=process:nullp.
+
+dispatch_tc_4(ProcQueue,Current,RemTicks,Quantum) :-
+  ProcQueue={} &
+  Current=process:nullp.
+
+dispatch_ts_56(ProcQueue,Current,RemTicks,Quantum) :-
+  apply(ProcQueue,_29512,_29562) &
+  dec(_29562,process) &
+  smin(_29522,_29512) &
+  dec(_29512,int) &
+  dom(ProcQueue,_29522) &
+  dec(_29522,set(int)) &
+  RemTicks=0 &
+  ProcQueue neq {} &
+  Current=process:nullp &
+  ProcQueue neq {} &
+  {[_29512,_29562]}neq{} &
+  subset({[_29512,_29562]},ProcQueue) &
+  ProcQueue neq {[_29512,_29562]}.
+
+dispatch_tc_56(ProcQueue,Current,RemTicks,Quantum) :-
+  ProcQueue={[0,process:n0],[1,process:n1]} &
+  RemTicks=0 &
+  Current=process:nullp.
+
+dispatch_ts_57(ProcQueue,Current,RemTicks,Quantum) :-
+  apply(ProcQueue,_29512,_29562) &
+  dec(_29562,process) &
+  smin(_29522,_29512) &
+  dec(_29512,int) &
+  dom(ProcQueue,_29522) &
+  dec(_29522,set(int)) &
+  RemTicks=0 &
+  ProcQueue neq {} &
+  Current=process:nullp &
+  ProcQueue neq {} &
+  {[_29512,_29562]}neq{} &
+  ProcQueue={[_29512,_29562]}.
+
+dispatch_tc_57(ProcQueue,Current,RemTicks,Quantum) :-
+  ProcQueue={[0,process:n0]} &
+  RemTicks=0 &
+  Current=process:nullp.
+

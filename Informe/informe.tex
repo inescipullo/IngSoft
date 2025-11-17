@@ -454,65 +454,101 @@ También fue necesario aumentar el timeout para que se logren descargar algunas 
 
 \section{Casos de Prueba con \setlog-TTF}
 
-Se generan casos de prubea utilizando \setlog-TTF para todas las operaciones.
+Luego de que la especificación pase el control de tipos, y sea analizada por el VCG y las condiciones de verificación se hayan consultado y descargado, se generan casos de prubea utilizando \setlog-TTF para todas las operaciones.
 
 \subsection*{Comandos utilizados}
 
+\subsubsection*{Operación \textbf{newProcess}}
+
 \begin{verbatim}
-    loadspec ../fastest.tex
-    selop NewProcess
-    genalltt
-    addtactic NewProcess_DNF_1 SP \notin p? \notin \ran procQueue
-    addtactic NewProcess_DNF_3 SP \in p? \in \ran procQueue
-    genalltt
-    genalltca
+ttf(planificador).
+applydnf(newProcess(NewProc)).
+writett.
+applysp(newProcess_dnf_1,un(ProcQueue, {[Max1, NewProc]}, ProcQueue_)).
+prunett.
+writett.
+gentc.
+writetc.
+exporttt.
 \end{verbatim}
 
-Con estos comandos se carga la especificación, se selecciona la operación para la cual generar los casos de prueba y se aplican las tacticas de testing.
-En primer lugar, se aplica \textit{Disjunctive Normal Form (DNF)}, que lleva la operación a su forma normal disyuntiva, ya que es la táctica por defecto que aplica \textsc{Fastest} al ejecutar el comando \verb|genalltt|. 
-Esto particiona la operación de acuerdo a las precondiciones de las suboperaciones que la definen, donde \textit{NewProcess\_DNF\_1} corresponde a \textit{newProcessOk}, \textit{NewProcess\_DNF\_2} corresponde a \textit{newProcessOkEmptyQueue} y las tres restantes corresponden a las tres alternativas de \textit{newProcessError}.
-Luego, se aplican las tacticas de partición estándar (\textit{Standard Partition (SP)}) de $\not\in$ y $\in$, donde resulta útil. Se obtiene el siguiente árbol:
+\subsubsection*{Operación \textbf{dispatch}}
 
-\begin{minipage}{5cm}
-\dirtree{%
-    .1 $NewProcess\_VIS$.
-    .2 $NewProcess\_DNF\_1$.
-    .3 $NewProcess\_SP\_1$.
-    .3 $NewProcess\_SP\_2$.
-    .2 $NewProcess\_DNF\_2$.
-    .2 $NewProcess\_DNF\_3$.
-    .3 $NewProcess\_SP\_3$.
-    .3 $NewProcess\_SP\_4$.
-    .2 $NewProcess\_DNF\_4$.
-    .2 $NewProcess\_DNF\_5$.
-}
-\end{minipage}
+\begin{verbatim}
+ttf(planificador).
+applydnf(dispatch).
+writett.
+applysp(dispatch_dnf_2,un(ProcQueue, {[Max1, Current]}, ProcQueue_)).
+prunett.
+writett.
+applysp(dispatch_dnf_5,diff(ProcQueue, {[Min, Head]}, ProcQueue_)).
+prunett.
+writett.
+gentc.
+writetc.
+exporttt.
+\end{verbatim}
 
-Finalmente se generan los casos de prueba, obteniendo el siguiente árbol de clases de prueba:
+\subsubsection*{Operación \textbf{terminateProc}}
 
-\begin{minipage}{7cm}
-\dirtree{%
-    .1 $NewProcess\_VIS$.
-    .2 $NewProcess\_DNF\_1$.
-    .3 $NewProcess\_SP\_2$.
-    .4 $NewProcess\_SP\_2\_TCASE$.
-    .2 $NewProcess\_DNF\_2$.
-    .3 $NewProcess\_DNF\_2\_TCASE$.
-    .2 $NewProcess\_DNF\_3$.
-    .3 $NewProcess\_SP\_3$.
-    .4 $NewProcess\_SP\_3\_TCASE$.
-    .3 $NewProcess\_SP\_4$.
-    .4 $NewProcess\_SP\_4\_TCASE$.
-    .2 $NewProcess\_DNF\_4$.
-    .3 $NewProcess\_DNF\_4\_TCASE$.
-    .2 $NewProcess\_DNF\_5$.
-    .3 $NewProcess\_DNF\_5\_TCASE$.
-}
-\end{minipage}
+\begin{verbatim}
+ttf(planificador).
+applydnf(terminateProc(Proc)).
+writett.
+gentc.
+writett.
+writetc.
+exporttt.
+\end{verbatim}
 
-Notamos que no se generó un caso de prueba para la hoja \verb|NewProcess_SP_1|. Esto es porque es una clase de prueba vacía, ya que contiene tanto $procQueue \neq \{\}$ y $procQueue = \{\}$ como precondiciones.
 
-\subsection*{Esquemas Z}
+
+
+% Con estos comandos se carga la especificación, se selecciona la operación para la cual generar los casos de prueba y se aplican las tacticas de testing.
+% En primer lugar, se aplica \textit{Disjunctive Normal Form (DNF)}, que lleva la operación a su forma normal disyuntiva, ya que es la táctica por defecto que aplica \textsc{Fastest} al ejecutar el comando \verb|genalltt|. 
+% Esto particiona la operación de acuerdo a las precondiciones de las suboperaciones que la definen, donde \textit{NewProcess\_DNF\_1} corresponde a \textit{newProcessOk}, \textit{NewProcess\_DNF\_2} corresponde a \textit{newProcessOkEmptyQueue} y las tres restantes corresponden a las tres alternativas de \textit{newProcessError}.
+% Luego, se aplican las tacticas de partición estándar (\textit{Standard Partition (SP)}) de $\not\in$ y $\in$, donde resulta útil. Se obtiene el siguiente árbol:
+
+% \begin{minipage}{5cm}
+% \dirtree{%
+%     .1 $NewProcess\_VIS$.
+%     .2 $NewProcess\_DNF\_1$.
+%     .3 $NewProcess\_SP\_1$.
+%     .3 $NewProcess\_SP\_2$.
+%     .2 $NewProcess\_DNF\_2$.
+%     .2 $NewProcess\_DNF\_3$.
+%     .3 $NewProcess\_SP\_3$.
+%     .3 $NewProcess\_SP\_4$.
+%     .2 $NewProcess\_DNF\_4$.
+%     .2 $NewProcess\_DNF\_5$.
+% }
+% \end{minipage}
+
+% Finalmente se generan los casos de prueba, obteniendo el siguiente árbol de clases de prueba:
+
+% \begin{minipage}{7cm}
+% \dirtree{%
+%     .1 $NewProcess\_VIS$.
+%     .2 $NewProcess\_DNF\_1$.
+%     .3 $NewProcess\_SP\_2$.
+%     .4 $NewProcess\_SP\_2\_TCASE$.
+%     .2 $NewProcess\_DNF\_2$.
+%     .3 $NewProcess\_DNF\_2\_TCASE$.
+%     .2 $NewProcess\_DNF\_3$.
+%     .3 $NewProcess\_SP\_3$.
+%     .4 $NewProcess\_SP\_3\_TCASE$.
+%     .3 $NewProcess\_SP\_4$.
+%     .4 $NewProcess\_SP\_4\_TCASE$.
+%     .2 $NewProcess\_DNF\_4$.
+%     .3 $NewProcess\_DNF\_4\_TCASE$.
+%     .2 $NewProcess\_DNF\_5$.
+%     .3 $NewProcess\_DNF\_5\_TCASE$.
+% }
+% \end{minipage}
+
+% Notamos que no se generó un caso de prueba para la hoja \verb|NewProcess_SP_1|. Esto es porque es una clase de prueba vacía, ya que contiene tanto $procQueue \neq \{\}$ y $procQueue = \{\}$ como precondiciones.
+
+% \subsection*{Esquemas Z}
 
 
 
