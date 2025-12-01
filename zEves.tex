@@ -1,0 +1,147 @@
+\begin{zed}
+    [PROCESS]
+\also
+    TICK == \num
+\end{zed}
+
+\begin{axdef}
+    nullp : PROCESS
+\end{axdef}
+
+\begin{axdef}
+    quantum : TICK
+\where
+    quantum = 5
+\end{axdef}
+
+\begin{schema}{Dispatcher}
+    procQueue : \nat \pfun PROCESS \\
+    current : PROCESS \\
+    remTicks : TICK
+\end{schema}
+
+\begin{schema}{InitDispatcher}
+    Dispatcher
+\where
+    procQueue = \emptyset \\
+    current = nullp \\
+    remTicks = 0
+\end{schema}
+
+\begin{schema}{InvDispatcher}
+    Dispatcher
+\where
+    current \notin \ran procQueue \\
+    nullp \notin \ran procQueue
+\end{schema}
+
+\begin{schema}{NewProcessOk}
+    \Delta Dispatcher \\
+    p? : PROCESS
+\where
+    procQueue \neq \emptyset \\
+    p? \notin \ran procQueue \\
+    p? \neq current \\
+    p? \neq nullp \\
+    procQueue' = procQueue \cup \{max~(\dom procQueue) + 1 \mapsto p?\} \\
+    current' = current \\
+    remTicks' = remTicks
+\end{schema}
+
+\begin{schema}{newProcessOkEmptyQueue}
+    \Delta Dispatcher \\
+    p? : PROCESS
+\where
+    procQueue = \emptyset \\
+    p? \notin \ran procQueue \\
+    p? \neq current \\
+    p? \neq nullp \\
+    procQueue' = \{1 \mapsto p?\} \\
+    current' = current \\
+    remTicks' = remTicks
+\end{schema}
+
+\begin{schema}{NewProcessError}
+    \Xi Dispatcher \\
+    p? : PROCESS
+\where
+    p? \in \ran procQueue \lor p? = current \lor p? = nullp
+\end{schema}
+
+\begin{zed}
+    NewProcess \defs NewProcessOk \lor newProcessOkEmptyQueue \lor NewProcessError
+\end{zed}
+
+\begin{schema}{Tick}
+    \Delta Dispatcher
+\where
+    remTicks > 0 \\
+    current \neq nullp \\
+    procQueue' = procQueue \\
+    current' = current \\
+    remTicks' = remTicks - 1    
+\end{schema}
+
+\begin{schema}{Timeout}
+    \Delta Dispatcher
+\where
+    procQueue \neq \emptyset \\
+    remTicks = 0 \\
+    current \neq nullp \\
+    procQueue' = procQueue \cup \{max~(\dom procQueue) + 1 \mapsto current\} \\
+    current' = nullp \\
+    remTicks' = remTicks 
+\end{schema}
+
+\begin{schema}{TimeoutEmptyQueue}
+    \Delta Dispatcher
+\where
+    procQueue = \emptyset \\
+    remTicks = 0 \\
+    current \neq nullp \\
+    procQueue' = \{1 \mapsto current\} \\
+    current' = nullp \\
+    remTicks' = remTicks 
+\end{schema}
+
+\begin{schema}{DispatchProcess}
+    \Delta Dispatcher
+\where
+    current = nullp \\
+    procQueue \neq \emptyset \\
+    procQueue' = procQueue \setminus \{min~(\dom procQueue) \mapsto procQueue(min~(\dom procQueue))\} \\
+    current' = procQueue(min~(\dom procQueue)) \\
+    remTicks' = remTicks 
+\end{schema}
+
+\begin{schema}{Idle}
+    \Xi Dispatcher
+\where
+    current = nullp \\
+    procQueue = \emptyset
+\end{schema}
+
+\begin{zed}
+    Dispatch \defs Tick \lor Timeout \lor TimeoutEmptyQueue \lor DispatchProcess \lor Idle
+\end{zed}
+
+\begin{schema}{TerminateProcessOk}
+    \Delta Dispatcher \\
+    p? : PROCESS
+\where
+    current = p? \\
+    procQueue' = procQueue \\
+    current' = nullp \\
+    remTicks' = remTicks
+\end{schema}
+
+\begin{schema}{TerminateProcessError}
+    \Xi Dispatcher \\
+    p? : PROCESS
+\where
+    current \neq p?
+\end{schema}
+
+\begin{zed}
+    TerminateProcess \defs TerminateProcessOk \lor TerminateProcessError
+\end{zed}
