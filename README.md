@@ -11,14 +11,12 @@ https://www.fceia.unr.edu.ar/ingsoft/
 
 # Versiones
 
->[!NOTE]
-> {log}: Version 4.9.9 Release 1d
-> 
-> SWI-Prolog: version 9.3.29 for x86_64-linux
->
-> Z/EVES: This is the Z/EVES System, version 2.3
+- {log}: Version 4.9.9 Release 1d
+- SWI-Prolog: version 9.3.29 for x86_64-linux
+- Z/EVES: This is the Z/EVES System, version 2.3
 
-Nota: Z/EVES está en el labdcc, en mi opinión no vale la pena intentar descargarlo :)
+>[!NOTE]
+> Z/EVES está en el labdcc, en mi opinión no vale la pena intentar descargarlo :)
 
 # Comandos de {_log_} utilizados
 
