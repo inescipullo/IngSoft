@@ -108,7 +108,7 @@ dispatch_pi_invPFun(ProcQueue,ProcQueue,Current,RemTicks,ProcQueue_,Current_,Rem
 
 dispatch_pi_invIny(ProcQueue,ProcQueue,Current,RemTicks,ProcQueue_,Current_,RemTicks_) :-
   invDispatcher(ProcQueue, Current) &
-  neq(
+  neg(
     invIny(ProcQueue) &
     dispatch(ProcQueue,Current,RemTicks,ProcQueue_,Current_,RemTicks_) implies
     invIny(ProcQueue_)

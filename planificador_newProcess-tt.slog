@@ -1,19 +1,19 @@
 newProcess_ts_14(NewProc,ProcQueue,Current,RemTicks,Quantum) :-
-  dec(_56180,int) &
-  _56180 is _56102+1 &
-  smax(_56112,_56102) &
-  dec(_56102,int) &
-  dom(ProcQueue,_56112) &
-  dec(_56112,set(int)) &
+  dec(_50686,int) &
+  _50686 is _50608+1 &
+  smax(_50618,_50608) &
+  dec(_50608,int) &
+  dom(ProcQueue,_50618) &
+  dec(_50618,set(int)) &
   NewProc neq process:nullp &
   NewProc neq Current &
-  NewProc nin _56132 &
-  ran(ProcQueue,_56132) &
-  dec(_56132,set(process)) &
+  NewProc nin _50638 &
+  ran(ProcQueue,_50638) &
+  dec(_50638,set(process)) &
   ProcQueue neq {} &
   ProcQueue neq {} &
-  {[_56180,NewProc]}neq{} &
-  disj(ProcQueue,{[_56180,NewProc]}).
+  {[_50686,NewProc]}neq{} &
+  disj(ProcQueue,{[_50686,NewProc]}).
 
 newProcess_tc_14(NewProc,ProcQueue,Current,RemTicks,Quantum) :-
   ProcQueue={[-1,process:n2]} &
@@ -23,9 +23,9 @@ newProcess_tc_14(NewProc,ProcQueue,Current,RemTicks,Quantum) :-
 newProcess_ts_2(NewProc,ProcQueue,Current,RemTicks,Quantum) :-
   NewProc neq process:nullp &
   NewProc neq Current &
-  NewProc nin _56380 &
-  ran(ProcQueue,_56380) &
-  dec(_56380,set(process)) &
+  NewProc nin _50886 &
+  ran(ProcQueue,_50886) &
+  dec(_50886,set(process)) &
   ProcQueue={}.
 
 newProcess_tc_2(NewProc,ProcQueue,Current,RemTicks,Quantum) :-
@@ -34,9 +34,9 @@ newProcess_tc_2(NewProc,ProcQueue,Current,RemTicks,Quantum) :-
   ProcQueue={}.
 
 newProcess_ts_3(NewProc,ProcQueue,Current,RemTicks,Quantum) :-
-  NewProc in _6582 &
-  ran(ProcQueue,_6582) &
-  dec(_6582,set(process)).
+  NewProc in _51072 &
+  ran(ProcQueue,_51072) &
+  dec(_51072,set(process)).
 
 newProcess_tc_3(NewProc,ProcQueue,Current,RemTicks,Quantum) :-
   NewProc=process:n1 &

@@ -12,7 +12,7 @@ https://www.fceia.unr.edu.ar/ingsoft/
 # Versiones
 
 >[!NOTE]
-> {log}: Version 4.9.9 Release 1d
+> {log}: Version 4.9.9 Release 1e
 > 
 > SWI-Prolog: version 9.3.29 for x86_64-linux
 >
@@ -44,9 +44,9 @@ $ swipl
 {log}=> check_vcs_planificador.
 ```
 
-Antes de `consult('planificador-vc.slog').`, hacer cambios en el archivo `planificador-vc.slog` de ser necesario, para que todos los casos de prueba se descarguen exitosamente.
+Puede pasar que no todas las condiciones de verificación se descargen exitosamente al ejecutar `check_vcs_planificador.`. En ese caso, hacer los cambios necesarios en el archivo `planificador-vc.slog` y luego volver a ejecutar `consult('planificador-vc.slog').` y `check_vcs_planificador.`.
 
-> Notar que de ahora en más no vuelvo a ejecutar `vcg('planificador.slog').` ya que eso regeneraría el archivo `*-vc.slog` con las condiciones de verificación, cosa que no quiero que ocurra si tuve que modificarlo para que todas las condiciones se descarguen exitosamente.
+> Notar que de ahora en más no vuelvo a ejecutar `vcg('planificador.slog').` ya que eso regeneraría el archivo `*-vc.slog` con las condiciones de verificación, cosa que no quiero que ocurra porque tuve que hacer algunas modificaciones.
 
 ## Para ejecutar las simulaciones en el entorno NEXT
 
