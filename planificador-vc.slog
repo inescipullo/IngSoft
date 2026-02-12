@@ -177,6 +177,23 @@ check_vcs_planificador(Opt) :-
 check_vcs_planificador(TO,Opt) :-
    check_aux(TO,Opt)!.
 
+check_vcs_planificador(VC,TO,Opt) :-
+   prolog_call(
+     (atom(VC),!,
+      atom_string(VC,SVC),
+      (\+setlog:vc_proved(VC) ->
+         (setlog:vc_unsat(SVC,_,_,SL,_,_) ->
+            term_string(L,SL)
+         ;
+            setlog:all_unsat_vc(VC,_,_,L,_,_)
+         ),
+         check_unsat_vc1(L,TO,Opt)
+      ;
+         nl,write(VC),write(' already proved'),nl
+      )
+     )
+  ).
+
 check_sat_vc(VCID) :- prolog_call(check_sat_vc1(VCID)).
 
 check_unsat_vc(VCID,TO,Opt) :- prolog_call(check_unsat_vc1(VCID,TO,Opt)).
